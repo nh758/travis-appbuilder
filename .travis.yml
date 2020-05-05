@@ -1,0 +1,15 @@
+dist: bionic
+
+language: node_js
+
+node_js:
+        - node
+
+services:
+        - docker
+
+before_install:
+        - npm install
+
+script:
+        - npm run test
