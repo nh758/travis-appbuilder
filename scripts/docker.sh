@@ -97,14 +97,28 @@ up () {
   
   echo "Creating Docker container: $SAILS_IMAGE"
   docker run \
-  	--detach \
+	-it \
   	--name $SAILS_IMAGE \
   	--network $NETWORK_NAME \
   	--publish 1337:1337 \
   	--mount type=bind,source=$BASE_DIR/config/local.js,target=/app/config/local.js \
   	--mount type=bind,source=$BASE_DIR/data,target=/app/data \
+  	--mount type=bind,source=$BASE_DIR/app,target=/app \
+  	--mount type=bind,source=$BASE_DIR/developer/app_builder,target=/app/node_modules/app_builder \
+  	--mount type=bind,source=$BASE_DIR/developer/appdev-core,target=/app/node_modules/appdev-core \
+  	--mount type=bind,source=$BASE_DIR/developer/appdev-opsportal,target=/app/node_modules/appdev-opsportal \
   	skipdaddy/install-ab:developer_v2 \
-	node --inspect --max-old-space-size=2048 --stack-size=2048 app_waitForMySql.js
+	/bin/bash
+	#node --inspect --max-old-space-size=2048 --stack-size=2048 app_waitForMySql.js
+
+  	#--mount type=bind,source=$BASE_DIR/developer/app_builder,target=/app/node_modules/app_builder \
+  	#--mount type=bind,source=$BASE_DIR/developer/appdev-core,target=/app/node_modules/appdev-core \
+  	#--mount type=bind,source=$BASE_DIR/developer/appdev-opsportal,target=/app/node_modules/appdev-opsportal \
+	#node --inspect --max-old-space-size=2048 --stack-size=2048 app_waitForMySql.js
+
+        #source: ./developer/app_builder      #target: /app/node_modules/app_builder
+        #source: ./developer/appdev-core      #target: /app/node_modules/appdev-core
+        #source: ./developer/appdev-opsportal #target: /app/node_modules/appdev-opsportal
 
   	#--restart=on-failure \
   echo ""

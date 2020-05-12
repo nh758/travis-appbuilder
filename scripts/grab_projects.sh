@@ -45,23 +45,26 @@ place_files () {
   
   pushd $TARGET_DIR
 
-  if [ "$CURRENT_PROJECT" == "$PROJECT" ]
-  then
-        echo "Using current directory"
-	echo "Linking files from $CURRENT_DIR into $TARGET_DIR"
-	ln -s $(pwd) $TARGET_DIR
+    if [ "$CURRENT_PROJECT" == "$PROJECT" ]
+    then
+          echo "Using current directory"
+          echo "Linking files from $CURRENT_DIR into $TARGET_DIR"
+          ln -s $(pwd) $TARGET_DIR
 
-  else
-	echo "Using GIT"
-        local GITHUB_PATH="https://github.com/appdevdesigns/$PROJECT.git"
-	time git clone $GITHUB_PATH
-	if [ $? != 0 ] ; then
-	  echo "place_files() could not git clone $GITHUB_PATH"
-	  exit 1;
-	fi
-	echo -n "Disk usage:  "
-	du --summarize -h $TARGET_DIR/$PROJECT
-  fi
+    else
+          echo "Using GIT"
+          local GITHUB_PATH="https://github.com/appdevdesigns/$PROJECT.git"
+          time git clone --recurse-submodules $GITHUB_PATH
+          if [ $? != 0 ] ; then
+            echo "place_files() could not git clone $GITHUB_PATH"
+            exit 1;
+          fi
+    fi
+
+    pushd $PROJECT
+      npm install
+    popd
+
   popd
   echo ""
 }
@@ -69,7 +72,7 @@ place_files () {
 
 
 
-print_info() {
+print_header() {
   echo "=================================================================="
   echo "Travis CI Continuous Integration Script for AppBuilder"
   echo "=================================================================="
@@ -80,11 +83,13 @@ print_info() {
 }
 
 main () {
-  print_info
+  print_header
 
   place_files app_builder
   place_files appdev-core
   place_files appdev-opsportal
+
+
 
   
 }
