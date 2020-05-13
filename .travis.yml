@@ -10,8 +10,12 @@ services:
 
 before_install:
         - npm install
-        - npm install -g Hiro-Nakamura/ab-cli
+          #- npm install -g Hiro-Nakamura/ab-cli
 
 script:
-        #        - npm run test
-        - npm run installer
+        - npm run test
+        #- npm run installer
+
+notifications:
+        slack: digiserve-workspace:TP2WoZPOV4G2zlzgBQDF9K01
+
