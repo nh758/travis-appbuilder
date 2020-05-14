@@ -1,13 +1,11 @@
-#!/bin/sh
-
-#install installer
-#npm install -g Hiro-Nakamura/ab-cli
+#!/bin/bash -v 
 
 #run installer
 WORKING_DIR=workdir
 
 appbuilder install $WORKING_DIR \
 	--V1 \
+	--develop \
 	--port=1337 \
 	--db.port=3306 \
 	--db.password=r00t \
@@ -19,5 +17,4 @@ appbuilder install $WORKING_DIR \
 	--nginx.enable=false \
 	--nginx.sslType=none 
 
-	#--develop \
 	#--nginx.enable=false \
