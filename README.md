@@ -11,18 +11,18 @@
 - arangodb
 - ab_sails:1.0 (based on skipdaddy/install-ab:developer_v2)
 
-## strategy #1:
+## strategy #1: Use simple scripts
 - pull various git repositories into developer/
 - start MariaDB Docker image
 - start ArangoDB Docker image
 - start Sails Docker image
-- run npm test
+- npm run test
 - blocking: cannot properly "install" app_builder and populate the /app directory 
 
-## strategy #2:
+## strategy #2: Use ab-cli
 - use ab-cli to install
 - start appbuilder
-- run npm test
+- npm run test
 - weakness: ab-cli cannot currently specify branches
 
 ## Progress:
