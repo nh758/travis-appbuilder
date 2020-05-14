@@ -23,7 +23,7 @@ BASE_DIR="$(pwd)"
 
 ## ===================== FUNCTIONS =================================
 create_network () {
-  echo -n "Creating Docker network: "
+  echo "Creating Docker network: $1"
   docker network create --driver bridge $1 
   echo ""
 }
