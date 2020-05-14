@@ -17,11 +17,13 @@
 - start ArangoDB Docker image
 - start Sails Docker image
 - run npm test
+- blocking: cannot properly "install" app_builder and populate the /app directory 
 
 ## strategy #2:
 - use ab-cli to install
 - start appbuilder
 - run npm test
+- weakness: ab-cli cannot currently specify branches
 
 ## Progress:
 
@@ -35,10 +37,5 @@
 - successful: https://travis-ci.org/github/echu888/travis-appbuilder/builds/686878938
 
 ### strategy #2: Using ab-cli (developer):
-- appbuilder --develop is too verbose: https://travis-ci.org/github/echu888/travis-appbuilder/builds/686884389
-- awaiting testing
-- weakness of ab-cli: cannot specify branches
-- blocking: new changes in develop branch may not be working
-
-
-
+- failure: appbuilder --develop is too verbose: https://travis-ci.org/github/echu888/travis-appbuilder/builds/686884389
+- blocking: new changes in develop branch may not be working: https://travis-ci.org/github/echu888/travis-appbuilder/builds/686891264
