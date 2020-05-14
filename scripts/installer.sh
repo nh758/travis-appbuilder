@@ -3,6 +3,7 @@
 #run installer
 WORKING_DIR=workdir
 
+time \
 appbuilder install $WORKING_DIR \
 	--V1 \
 	--develop \
@@ -15,6 +16,7 @@ appbuilder install $WORKING_DIR \
 	--arango.password=r00t \
 	--arango.expose=false \
 	--nginx.enable=false \
-	--nginx.sslType=none 
+	--nginx.sslType=none \
+	1> /dev/null 2>&1
 
 	#--nginx.enable=false \
