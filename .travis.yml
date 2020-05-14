@@ -13,10 +13,12 @@ before_install:
         - npm install -g Hiro-Nakamura/ab-cli
         - docker swarm init
         - docker ps
+        - scripts/installer.sh
+
 
 script:
         #- npm run test
-        - npm run installer
+        - npm run installer-test
 
 notifications:
         slack: digiserve-workspace:TP2WoZPOV4G2zlzgBQDF9K01

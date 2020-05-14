@@ -4,12 +4,14 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "installer": "scripts/installer.sh",
     "docker:up":"scripts/docker.sh up",
     "docker:down":"scripts/docker.sh down",
     "pretest": "npm run docker:up",
-    "test": "wait-on http-get://127.0.0.1:1337/site/login && cypress run; npm run docker:down"
-    
+    "test": "wait-on http-get://127.0.0.1:1337/site/login && cypress run; npm run docker:down",
+
+    "preinstaller-test": "cd workdir; ./UP.sh &",
+    "installer-test": "wait-on http-get://127.0.0.1:1337/site/login && cypress run",
+    "postinstaller-test": "cd workdir; ./Down.sh"
   },
   "repository": {
     "type": "git",
