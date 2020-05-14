@@ -21,4 +21,18 @@ General strategy:
 - start Sails Docker image
 - run npm test
 
+Using docker.sh (production):
+https://travis-ci.org/github/echu888/travis-appbuilder/builds/686864741
+
+Using docker.sh (developer):
+currently unable to generate proper files for /app directory
+
+Using ab-cli (production):
+https://travis-ci.org/github/echu888/travis-appbuilder/builds/686878938
+
+Using ab-cli (developer):
+waiting testing
+
+
+
 
