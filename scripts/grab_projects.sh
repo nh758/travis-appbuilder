@@ -21,24 +21,39 @@
 
 
 
-#if project not [ app_builder ]       git clone [ app_builder ]
-#if project not [ appdev-core ]       git clone [ appdev-core ]
-#if project not [ appdev-opsportal ]  git clone [ appdev-opsportal ]
-
-#https://github.com/appdevdesigns/app_builder.git
-#https://github.com/appdevdesigns/appdev-core.git
-#https://github.com/appdevdesigns/appdev-opsportal.git
-
-# specify the branch!!!!
 
 CURRENT_DIR=$(pwd)
 CURRENT_PROJECT=$(basename $CURRENT_DIR)
 
 
+git_clone() {
+  local BRANCH=$1
+  local REMOTE=$2
+  local GIT_OPTIONS="--recurse-submodules"
+  git clone $GIT_OPTIONS --single-branch --branch $BRANCH $REMOTE
+  if [ $? != 0 ] ; then
+    echo "Failed to clone git project: $GITHUB_PATH"
+    exit 1;
+  fi
+}
+
+npm_install() {
+  local $PROJECT_DIR=$1
+  pushd $PROJECT_DIR
+    npm install
+    if [ $? != 0 ] ; then
+      echo "Failed to run 'npm install' on $PROJECT_DIR"
+      exit 1;
+    fi
+  popd
+
+}
+
+
 place_files () {
   local TARGET_DIR="developer"
-  local PROJECT=$1
-  local BRANCH=$2
+  local BRANCH=$1
+  local PROJECT=$2
   echo "=================================================================="
   echo "Placing files for [$1] into directory: [$TARGET_DIR]"
   echo "=================================================================="
@@ -54,16 +69,10 @@ place_files () {
     else
           echo "Using GIT"
           local GITHUB_PATH="https://github.com/appdevdesigns/$PROJECT.git"
-          time git clone --recurse-submodules $GITHUB_PATH
-          if [ $? != 0 ] ; then
-            echo "place_files() could not git clone $GITHUB_PATH"
-            exit 1;
-          fi
+          time git_clone $BRANCH $GITHUB_PATH
     fi
 
-    pushd $PROJECT
-      npm install
-    popd
+    npm_install $PROJECT
 
   popd
   echo ""
@@ -82,33 +91,17 @@ print_header() {
   echo ""
 }
 
-main () {
+do_main () {
   print_header
 
-  place_files app_builder
-  place_files appdev-core
-  place_files appdev-opsportal
-
-
-
-  
+  place_files develop app_builder
+  place_files develop appdev-core
+  place_files develop appdev-opsportal
 }
 
 
-main
+do_main
 
-
-
-
-#docker run mariadb
-#docker run arangodb
-
-#set up correct links
-
-#docker run sails  --> with 3 mounts listed above
-
-#npm run test:ci
-# -> cypress run
 
 
 

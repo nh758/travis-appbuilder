@@ -3,18 +3,21 @@
 ## ===================== SETUP =================================
 MARIADB_IMAGE="db"
 MARIADB_VOLUME="$MARIADB_IMAGE-data"
+MARIADB_PORT=3306
 
 ARANGODB_IMAGE="arangodb"
 ARANGODB_VOLUME="$ARANGODB_IMAGE-data"
 ARANGODB_APPS_VOLUME="$ARANGODB_IMAGE-apps-data"
+ARANGODB_PORT=8529
 
 SAILS_IMAGE="sails"
+SAILS_PORT=1337
 
 NETWORK_NAME="babby"
 
 # Docker requires absolute paths
 BASE_DIR="$(pwd)"
-
+## =============================================================
 
 
 
@@ -42,10 +45,9 @@ remove_volume () {
 }
 
 stop_image () {
-  #echo -n "Stopping Docker container: "
-  #docker stop $1
-  
   echo -n "Stopping and removing Docker container: "
+
+  # Using rm --force is much faster than issuing docker stop && docker rm
   docker rm --force $1
 }
 
@@ -69,7 +71,7 @@ up () {
   	--detach \
   	--name $MARIADB_IMAGE \
   	--network $NETWORK_NAME \
-  	--publish 3306:3306 \
+  	--publish $MARIADB_PORT:$MARIADB_PORT \
   	--env="MYSQL_ROOT_PASSWORD=r00t" \
   	--mount source=$MARIADB_VOLUME,target=/var/lib/mysql \
         --mount type=bind,source=$BASE_DIR/mysql/init,target=/docker-entrypoint-initdb.d,readonly \
@@ -84,7 +86,7 @@ up () {
   	--detach \
   	--name $ARANGODB_IMAGE \
   	--network $NETWORK_NAME \
-  	--publish 8529:8529 \
+  	--publish $ARANGODB_PORT:$ARANGODB_PORT \
   	--env="ARANGO_ROOT_PASSWORD=r00t" \
   	--mount source=$ARANGODB_VOLUME,target=/var/lib/arangodb3 \
   	--mount source=$ARANGODB_APPS_VOLUME,target=/var/lib/arangodb3-apps \
@@ -96,24 +98,26 @@ up () {
   
   
   echo "Creating Docker container: $SAILS_IMAGE"
+  SAILS_COMMAND="node --inspect --max-old-space-size=2048 --stack-size=2048 app_waitForMySql.js"
   docker run \
-	-it \
+  	--detach \
   	--name $SAILS_IMAGE \
   	--network $NETWORK_NAME \
-  	--publish 1337:1337 \
+  	--publish $SAILS_PORT:$SAILS_PORT \
   	--mount type=bind,source=$BASE_DIR/config/local.js,target=/app/config/local.js \
-  	--mount type=bind,source=$BASE_DIR/data,target=/app/data \
-  	--mount type=bind,source=$BASE_DIR/app,target=/app \
-  	--mount type=bind,source=$BASE_DIR/developer/app_builder,target=/app/node_modules/app_builder \
-  	--mount type=bind,source=$BASE_DIR/developer/appdev-core,target=/app/node_modules/appdev-core \
-  	--mount type=bind,source=$BASE_DIR/developer/appdev-opsportal,target=/app/node_modules/appdev-opsportal \
   	skipdaddy/install-ab:developer_v2 \
-	/bin/bash
-	#node --inspect --max-old-space-size=2048 --stack-size=2048 app_waitForMySql.js
+	$SAILS_COMMAND
+
+	#-it \
+  	#--detach \
+
+  	#--mount type=bind,source=$BASE_DIR/data,target=/app/data \
+  	#--mount type=bind,source=$BASE_DIR/app,target=/app \
 
   	#--mount type=bind,source=$BASE_DIR/developer/app_builder,target=/app/node_modules/app_builder \
   	#--mount type=bind,source=$BASE_DIR/developer/appdev-core,target=/app/node_modules/appdev-core \
   	#--mount type=bind,source=$BASE_DIR/developer/appdev-opsportal,target=/app/node_modules/appdev-opsportal \
+
 	#node --inspect --max-old-space-size=2048 --stack-size=2048 app_waitForMySql.js
 
         #source: ./developer/app_builder      #target: /app/node_modules/app_builder
@@ -141,21 +145,6 @@ down () {
   remove_network $NETWORK_NAME
 
 }
-
-wait_for_port () {
-  #while ! echo exit | nc localhost $1; do sleep 1; done
-  echo -n "Waiting for port $1 .."
-
-  while ! nc -z localhost $1; do
-    sleep 1
-    echo -n "."
-  done
-
-  echo " port is up!"
-}
-
-
-
 
 
 
