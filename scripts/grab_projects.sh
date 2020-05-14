@@ -38,7 +38,7 @@ git_clone() {
 }
 
 npm_install() {
-  local $PROJECT_DIR=$1
+  local PROJECT_DIR=$1
   pushd $PROJECT_DIR
     npm install
     if [ $? != 0 ] ; then
