@@ -5,6 +5,7 @@ WORKING_DIR=workdir
 
 time \
 appbuilder install $WORKING_DIR \
+	--travisCI \
 	--V1 \
 	--develop \
 	--port=1337 \
@@ -16,7 +17,5 @@ appbuilder install $WORKING_DIR \
 	--arango.password=r00t \
 	--arango.expose=false \
 	--nginx.enable=false \
-	--nginx.sslType=none \
-	1> /dev/null 2>&1
+	--nginx.sslType=none 
 
-	#--nginx.enable=false \
