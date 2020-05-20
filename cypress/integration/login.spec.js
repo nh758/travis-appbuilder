@@ -140,7 +140,8 @@ describe('Logging In - CSRF Tokens', function () {
 
     inDashboard()
   
-    cy.get('div.op-widget-horizontal-nav', {timeout:15000})
+    // give ample time for the load process to complete
+    cy.get('div.op-widget-horizontal-nav', {timeout:20000})
       .then(($result) => {
         cy.get('li[rbac-menu="Users"]' )
             .should('have.class', "selected")
