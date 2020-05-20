@@ -141,26 +141,26 @@ describe('Logging In - CSRF Tokens', function () {
     inDashboard()
   
     // give ample time for the load process to complete
-    cy.get('div.op-widget-horizontal-nav', {timeout:20000})
+    // also, wait for things to become visible since all of the 
+    // loading is asynchronous
+    cy.get('div.op-widget-horizontal-nav :visible', {timeout:30000})
       .then(($result) => {
-        cy.get('li[rbac-menu="Users"]' )
+        cy.get('li[rbac-menu="Users"]:visible')
             .should('have.class', "selected")
       })
 
   })
 
   it('selects the Roles section of the OpsPortal', function () {
-    cy.get('li[rbac-menu="Roles"]' )
+    cy.get('li[rbac-menu="Roles"]:visible')
         .should('not.have.class', "selected")
-    cy.get('li[rbac-menu="Roles"]' )
         .click()
         .should('have.class', "selected")
   })
 
   it('selects the Scopes section of the OpsPortal', function () {
-    cy.get('li[rbac-menu="Scopes"]' )
+    cy.get('li[rbac-menu="Scopes"]:visible')
         .should('not.have.class', "selected")
-    cy.get('li[rbac-menu="Scopes"]' )
         .click()
         .should('have.class', "selected")
   })
