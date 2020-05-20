@@ -13,10 +13,16 @@ ARANGODB_PORT=8529
 SAILS_IMAGE="sails"
 SAILS_PORT=1337
 
+REDIS_IMAGE="redis"
+
+EMAIL_IMAGE="email"
+
+PM_IMAGE="pm"
+
 NETWORK_NAME="babby"
 
 # Docker requires absolute paths
-BASE_DIR="$(pwd)"
+BASE_DIR="$(pwd)/workdir"
 ## =============================================================
 
 
@@ -95,15 +101,67 @@ up () {
   	#--mount type=bind,source=$BASE_DIR/arango/data,target=/var/lib/arangodb3 \
   	#--mount type=bind,source=$BASE_DIR/arango/apps,target=/var/lib/arangodb3-apps \
   echo ""
-  
+ 
+
+  echo "Creating redis container: $REDIS_IMAGE"
+  REDIS_COMMAND="redis-server --appendonly yes"
+  docker run \
+  	--detach \
+  	--name $REDIS_IMAGE \
+  	--network $NETWORK_NAME \
+  	--mount type=bind,source=$BASE_DIR/redis/data/,target=/data \
+  	redis  \
+	$REDIS_COMMAND
+  echo ""
+
+
+  echo "Linking config file"
+  ln -sf ../config $BASE_DIR
+
+  echo "Creating Docker container: $EMAIL_IMAGE"
+  EMAIL_COMMAND="node app.js"
+  docker run \
+  	--detach \
+  	--name $EMAIL_IMAGE \
+  	--network $NETWORK_NAME \
+	--env COTE_DISCOVERY_REDIS_HOST=redis \
+  	--mount type=bind,source=$BASE_DIR/developer/notification_email,target=/app \
+  	--mount type=bind,source=$BASE_DIR/config/local.js,target=/app/config/local.js \
+	-w /app \
+  	node \
+	$EMAIL_COMMAND
+
+  	#--publish $EMAIL_PORT:$EMAIL_PORT \ #EMAIL_PORT=9229
+	#-w /app
+  echo ""
+
+  echo "Creating Docker container: $PM_IMAGE"
+  PM_COMMAND="node app.js"
+  docker run \
+  	--detach \
+  	--name $PM_IMAGE \
+  	--network $NETWORK_NAME \
+	--env COTE_DISCOVERY_REDIS_HOST=redis \
+  	--mount type=bind,source=$BASE_DIR/developer/process_manager,target=/app \
+  	--mount type=bind,source=$BASE_DIR/config/local.js,target=/app/config/local.js \
+	-w /app \
+  	node \
+	$PM_COMMAND
+
+  	#--publish $EMAIL_PORT:$EMAIL_PORT \ #EMAIL_PORT=9229
+	#-w /app
+  echo ""
+
+ 
   
   echo "Creating Docker container: $SAILS_IMAGE"
   SAILS_COMMAND="node --inspect --max-old-space-size=2048 --stack-size=2048 app_waitForMySql.js"
   docker run \
-  	--detach \
   	--name $SAILS_IMAGE \
   	--network $NETWORK_NAME \
   	--publish $SAILS_PORT:$SAILS_PORT \
+	--env COTE_DISCOVERY_REDIS_HOST=redis \
+  	--mount type=bind,source=$BASE_DIR/app,target=/app \
   	--mount type=bind,source=$BASE_DIR/config/local.js,target=/app/config/local.js \
   	skipdaddy/install-ab:developer_v2 \
 	$SAILS_COMMAND
@@ -127,6 +185,10 @@ up () {
   	#--restart=on-failure \
   echo ""
 
+  	#--network $NETWORK_NAME \
+  	#--publish $REDIS_PORT:$REDIS_PORT \ #REDIS_PORT=6379
+
+
 
 }
 
@@ -134,6 +196,9 @@ down () {
 
   header "Stopping"
   stop_image $SAILS_IMAGE
+  stop_image $PM_IMAGE
+  stop_image $EMAIL_IMAGE
+  stop_image $REDIS_IMAGE
   stop_image $MARIADB_IMAGE
   stop_image $ARANGODB_IMAGE
   
@@ -159,8 +224,12 @@ elif [ "$1" == "down" ]
 then
   down
 
+elif [ "$1" == "restart" ]
+then
+  $0 down && $0 up
+
 else
-  echo "Usage: $(basename $0) [up|down]"
+  echo "Usage: $(basename $0) [up|down|restart]"
 
 fi
 

@@ -29,7 +29,8 @@ CURRENT_PROJECT=$(basename $CURRENT_DIR)
 git_clone() {
   local BRANCH=$1
   local REMOTE=$2
-  local GIT_OPTIONS="--recurse-submodules"
+  local GIT_OPTIONS="--recurse-submodules --depth 1 --shallow-submodules"
+  #local GIT_OPTIONS="--recurse-submodules"
   git clone $GIT_OPTIONS --single-branch --branch $BRANCH $REMOTE
   if [ $? != 0 ] ; then
     echo "Failed to clone git project: $GITHUB_PATH"
