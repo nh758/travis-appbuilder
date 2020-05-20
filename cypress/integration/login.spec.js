@@ -152,6 +152,7 @@ describe('Logging In - CSRF Tokens', function () {
   it('selects the Roles section of the OpsPortal', function () {
     cy.get('li[rbac-menu="Roles"]' )
         .should('not.have.class', "selected")
+    cy.get('li[rbac-menu="Roles"]' )
         .click()
         .should('have.class', "selected")
   })
@@ -159,6 +160,7 @@ describe('Logging In - CSRF Tokens', function () {
   it('selects the Scopes section of the OpsPortal', function () {
     cy.get('li[rbac-menu="Scopes"]' )
         .should('not.have.class', "selected")
+    cy.get('li[rbac-menu="Scopes"]' )
         .click()
         .should('have.class', "selected")
   })
