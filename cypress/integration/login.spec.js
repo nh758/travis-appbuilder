@@ -151,7 +151,7 @@ describe('Logging In - CSRF Tokens', function () {
 
   })
 
-  it('selects the Roles section of the OpsPortal', function () {
+  it('displays selects the Roles section of the OpsPortal', function () {
     cy.get('li[rbac-menu="Roles"]:visible')
         .should('not.have.class', "selected")
         .click()
@@ -164,6 +164,96 @@ describe('Logging In - CSRF Tokens', function () {
         .click()
         .should('have.class', "selected")
   })
+	
+
+
+  it('(Market scenario) creates market Roles', function () {
+
+    //switch to Roles tab
+    cy.get('li[rbac-menu="Roles"]:visible')
+        .click()
+
+    //add Architect role
+    cy.get('button.rbac-role-addRole')
+        .click()
+    cy.get('input[placeholder="Role Name*"]')
+	.click() .clear() .type('Architect')
+    cy.get('textarea[placeholder="Role Description*"]')
+	.click() .clear() .type('Able to build and edit the market app')
+
+    // add various role actions
+
+    //add Recorder role
+    cy.get('button.rbac-role-addRole')
+        .click()
+    cy.get('input[placeholder="Role Name*"]')
+	.click() .clear() .type('Recorder')
+    cy.get('textarea[placeholder="Role Description*"]')
+	.click() .clear() .type('Able to access the Treasury page and Market app')
+
+    // add various role actions
+
+    //add Treasurer role
+    cy.get('button.rbac-role-addRole')
+        .click()
+    cy.get('input[placeholder="Role Name*"]')
+	.click() .clear() .type('Treasurer')
+    cy.get('textarea[placeholder="Role Description*"]')
+	.click() .clear() .type('Able to access Treasury page and Market app')
+
+    // add various role actions
+
+
+  })
+
+  it('(Market scenario) deletes market Roles', function () {
+
+    //switch to Roles tab
+    cy.get('div.op-stage')
+        .scrollTo('top')
+
+    cy.contains('div[aria-colindex="1"]', 'Architect')
+	.then(($element) => {
+
+		const index = $element.attr('aria-rowindex');
+		//cy.wrap(index).as('rowIndex')
+		//cy.get('div[aria-colindex="4"]').contains('click()
+		
+		//cy.get('div[aria-row')
+
+	
+
+	})
+
+  })
+
+  it('(Market scenario) create roles', function () {
+//    cy.get('li[rbac-menu="Roles"]:visible')
+//        .click()
+//
+//    cy.get('button.rbac-role-addRole')
+//        .click()
+//
+//    cy.get('input[placeholder="Enter a Name*"]')
+//	.clear()
+//	.type('Market')
+  })
+
+  it('(Market scenario) creates City scope', function () {
+//    cy.get('button.rbac-scope-addScope')
+//        .click()
+//
+//    cy.get('input[placeholder="Enter a Name*"]')
+//	.type('Market')
+//
+//
+//    cy.get('textarea[placeholder="Scope Description*"]')
+//	.type('Scope for use with the Market app')
+//
+//    cy.get('button:contains("Save")')
+//	.click()
+  })
+
 
   //it('strategy #2: parse token from response headers', function () {
   //  // if we embed our csrf-token in response headers
