@@ -4,15 +4,11 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "docker:up": "scripts/docker.sh restart",
-    "docker:down": "scripts/docker.sh down",
     "test:interactive": "cypress open",
     "test:headless": "cypress run",
-    "pretest": "npm run docker:up",
+    "pretest": "cd workdir; docker stack deploy -c docker-compose.test.yml ab",
     "test": "wait-on http-get://127.0.0.1:1337/site/login && cypress run",
-    "preinstaller-test": "cd workdir; npm run developer 1>/dev/null 2>&1 &",
-    "installer-test": "wait-on http-get://127.0.0.1:1337/site/login && cypress run",
-    "postinstaller-test": "cd workdir; ./Down.sh"
+    "posttest": "cd workdir; docker stack rm ab"
   },
   "repository": {
     "type": "git",

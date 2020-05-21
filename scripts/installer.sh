@@ -19,5 +19,7 @@ appbuilder install $WORKING_DIR \
 	--nginx.enable=false \
 	--nginx.sslType=none \
 	--smtp.enable=false \
-	--smtp.auth=plain \
-	| sed 's/ install (takes a while)/./g'
+	--smtp.auth=plain
+
+ln -s ../docker-compose.test.yml workdir/docker-compose.test.yml
+
