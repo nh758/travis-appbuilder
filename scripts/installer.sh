@@ -19,5 +19,5 @@ appbuilder install $WORKING_DIR \
 	--nginx.enable=false \
 	--nginx.sslType=none \
 	--smtp.enable=false \
-	--smtp.auth=plain 
-
+	--smtp.auth=plain \ 
+	| sed 's/ install (takes a while)/./g'
