@@ -124,7 +124,7 @@ describe('AppBuilder Market simulation', function () {
     inDashboard()
   })
 
-  it('(OpsPortal) loads to the Users tab', function () {
+  it('(Login) loads to the OpsPortal', function () {
     cy.adminLogin()
 
     inDashboard()
@@ -132,12 +132,25 @@ describe('AppBuilder Market simulation', function () {
     // give ample time for the load process to complete
     // also, wait for things to become visible since all of the
     // loading is asynchronous
-    cy.get('div.op-widget-horizontal-nav :visible', { timeout: 30000 })
-      .then(($result) => {
-        cy.get('li[rbac-menu="Users"]:visible')
-          .should('have.class', 'selected')
-      })
+    cy.get('div.op-widget-horizontal-nav:visible', { timeout: 30000 })
+    //  .then(($result) => {
+    //  })
   })
+
+  it('(OpsPortal) loads to the Users tab', function () {
+
+    cy.get('li[rbac-menu="Users"]:visible')
+      .should('have.class', 'selected')
+    // give ample time for the load process to complete
+    // also, wait for things to become visible since all of the
+    // loading is asynchronous
+    //cy.get('div.op-widget-horizontal-nav :visible', { timeout: 30000 })
+    //  .then(($result) => {
+    //    cy.get('li[rbac-menu="Users"]:visible')
+    //      .should('have.class', 'selected')
+    //  })
+  })
+
 
   it('(OpsPortal) selects the Roles tab', function () {
     cy.get('li[rbac-menu="Roles"]:visible')
@@ -203,36 +216,37 @@ describe('AppBuilder Market simulation', function () {
       })
   })
 
+  //const listOfIds = ['#first_id', '#second_id']
+  //listOfIds.forEach(id => cy.get(id).click())
+
+  function getIds() {
+     let items = []
+     return new Cypress.Promise(resolve => {
+        cy.get('div[aria-colindex="1"]')
+           .each($element =>
+              cy.wrap($element)
+                 .invoke('click')
+                 .then(id => items.push(id))
+           )
+           .then(() => resolve(items))
+     })
+  }
+
+
   it('(Market scenario) deletes market roles: Architect', function () {
     // scroll to top of viewport, and switch to Roles tab
     cy.get('div.op-stage').scrollTo('top')
     cy.get('li[rbac-menu="Roles"]:visible').click()
 
-    cy.deleteRole('Architect')
+    //cy.deleteRole('Architect')
 
-    //  cy.contains('div[aria-colindex="1"]', 'Architect')
-    //  .then(($element) => {
-    //          const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
-    //          cy.get( selector ).as('ArchitectRole')
-    //  })
-    //  cy.get('@ArchitectRole') .click()
-    //  cy.get('div[aria-label="OK"]') .contains('OK') .click()
-    //
-    //  cy.contains('div[aria-colindex="1"]', 'Recorder')
-    //  .then(($element) => {
-    //          const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
-    //          cy.get( selector ).as('RecorderRole')
-    //  })
-    //  cy.get('@RecorderRole') .click()
-    //  cy.get('div[aria-label="OK"]') .contains('OK') .click()
-    //
-    //  cy.contains('div[aria-colindex="1"]', 'Treasurer')
-    //  .then(($element) => {
-    //          const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
-    //          cy.get( selector ).as('TreasurerRole')
-    //  })
-    //  cy.get('@TreasurerRole') .click()
-    //  cy.get('div[aria-label="OK"]') .contains('OK') .click()
+    //cy.contains('div[aria-colindex="1"]', 'Architect')
+    //.then(($element) => {
+    //        const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
+    //        cy.get( selector )
+    //          .click()
+    //})
+    //cy.get('div[aria-label="OK"]') .contains('OK') .click()
   })
 
   it('(Market scenario) deletes market Roles 2', function () {
@@ -240,7 +254,16 @@ describe('AppBuilder Market simulation', function () {
     // cy.get('div.op-stage') .scrollTo('top')
     // cy.get('li[rbac-menu="Roles"]:visible') .click()
 
-    cy.deleteRole('Recorder')
+    //cy.deleteRole('Recorder')
+
+    //cy.contains('div[aria-colindex="1"]', 'Recorder')
+    //.then(($element) => {
+    //        const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
+    //        cy.get( selector )
+    //          .click()
+    //})
+    //cy.get('div[aria-label="OK"]') .contains('OK') .click()
+
   })
 
   it('(Market scenario) deletes market Roles 3', function () {
@@ -248,7 +271,15 @@ describe('AppBuilder Market simulation', function () {
     // cy.get('div.op-stage') .scrollTo('top')
     // cy.get('li[rbac-menu="Roles"]:visible') .click()
 
-    cy.deleteRole('Treasurer')
+    //cy.deleteRole('Treasurer')
+
+    //cy.contains('div[aria-colindex="1"]', 'Treasurer')
+    //.then(($element) => {
+    //        const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
+    //        cy.get( selector )
+    //          .click()
+    //})
+    //cy.get('div[aria-label="OK"]') .contains('OK') .click()
   })
 
   // cy.deleteRole('Architect')
