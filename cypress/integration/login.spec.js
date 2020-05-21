@@ -4,15 +4,7 @@ Cypress.Cookies.defaults({
   whitelist: ['sails.sid', 'io']
 })
 
-// This recipe expands on the previous 'Logging in' examples
-// and shows you how to use cy.request when your backend
-// validates POSTs against a CSRF token
-//
 describe('AppBuilder Market simulation', function () {
-  // beforeEach(function () {
-  //  Cypress.Cookies.preserveOnce('sails_sid')
-  //  Cypress.Cookies.preserveOnce('io')
-  // })
 
   const username = 'admin'
   const password = 'admin'
@@ -31,23 +23,7 @@ describe('AppBuilder Market simulation', function () {
     })
   })
 
-  // Cypress.Commands.add('rememberLogin') => {
-  //  // now any cookie with the name 'session_id' or 'remember_token'
-  //  // will not be cleared before each test runs
-  //  Cypress.Cookies.defaults({
-  //    whitelist: ['sails.sid']
-  //  })
-  // })
-
-  // Cypress.Commands.add('forgetLogin') => {
-  //  Cypress.Cookies.defaults({
-  //    whitelist: {}
-  //  })
-  // })
-
   Cypress.Commands.add('userLogin', (user) => {
-    // cy.clearCookies()     // clear all cookies
-
     cy.visit('/site/login/')
 
     cy.get('input#user-name')
@@ -63,21 +39,10 @@ describe('AppBuilder Market simulation', function () {
     cy.userLogin({ name: 'admin', password: 'admin' })
   })
 
-  /**
-   * A utility function to check that we are seeing the dashboard page
-   */
+  // A utility function to check that we are seeing the dashboard page
   const inDashboard = () => {
     cy.location('href').should('be', Cypress.config().baseUrl)
-    // cy.contains('h2', 'dashboard.html')
   }
-
-  /**
-   * A utility function to confirm we can visit a protected page
-   */
-  //  const visitDashboard = () => {
-  //    cy.visit('/')
-  //    inDashboard()
-  //  }
 
   it('(Login) redirects to /site/login', () => {
     cy.clearCookie('sails.sid')
@@ -112,9 +77,6 @@ describe('AppBuilder Market simulation', function () {
             expect(resp.status).to.eq(200)
             // expect(resp.body).to.include('div.rbac-user-display')
           })
-
-      // cy.get('body')
-      //  .contains("div.rbac-user-display");
       })
 
     // successful "cy.request" sets all returned cookies, thus we should
@@ -175,9 +137,9 @@ describe('AppBuilder Market simulation', function () {
     cy.get('button.rbac-role-addRole')
       .click()
     cy.get('input[placeholder="Role Name*"]')
-      .click().clear().type('Architect')
+      .click().focused().clear().type('Architect')
     cy.get('textarea[placeholder="Role Description*"]')
-      .click().clear().type('Able to build and edit the market app')
+      .click().focused().clear().type('Able to build and edit the market app')
 
     // add various role actions
 
@@ -185,9 +147,9 @@ describe('AppBuilder Market simulation', function () {
     cy.get('button.rbac-role-addRole')
       .click()
     cy.get('input[placeholder="Role Name*"]')
-      .click().clear().type('Recorder')
+      .click().focused().clear().type('Recorder')
     cy.get('textarea[placeholder="Role Description*"]')
-      .click().clear().type('Able to access the Treasury page and Market app')
+      .click().focused().clear().type('Able to access the Treasury page and Market app')
 
     // add various role actions
 
@@ -195,9 +157,9 @@ describe('AppBuilder Market simulation', function () {
     cy.get('button.rbac-role-addRole')
       .click()
     cy.get('input[placeholder="Role Name*"]')
-      .click().clear().type('Treasurer')
+      .click().focused().clear().type('Treasurer')
     cy.get('textarea[placeholder="Role Description*"]')
-      .click().clear().type('Able to access Treasury page and Market app')
+      .click().focused().clear().type('Able to access Treasury page and Market app')
 
     // add various role actions
   })
@@ -225,8 +187,9 @@ describe('AppBuilder Market simulation', function () {
         cy.get('div[aria-colindex="1"]')
            .each($element =>
               cy.wrap($element)
-                 .invoke('click')
-                 .then(id => items.push(id))
+                  .log($element)
+//                .invoke('click')
+                .then(id => items.push(id))
            )
            .then(() => resolve(items))
      })
@@ -238,15 +201,16 @@ describe('AppBuilder Market simulation', function () {
     cy.get('div.op-stage').scrollTo('top')
     cy.get('li[rbac-menu="Roles"]:visible').click()
 
+    getIds();
     //cy.deleteRole('Architect')
 
-    //cy.contains('div[aria-colindex="1"]', 'Architect')
-    //.then(($element) => {
-    //        const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
-    //        cy.get( selector )
-    //          .click()
-    //})
-    //cy.get('div[aria-label="OK"]') .contains('OK') .click()
+    cy.get('div[aria-colindex="1"]').contains('Architect')
+    .then(($element) => {
+            const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
+            cy.get( selector )
+              .click()
+    })
+    cy.get('div[aria-label="OK"]') .contains('OK') .click()
   })
 
   it('(Market scenario) deletes market Roles 2', function () {
@@ -256,13 +220,14 @@ describe('AppBuilder Market simulation', function () {
 
     //cy.deleteRole('Recorder')
 
-    //cy.contains('div[aria-colindex="1"]', 'Recorder')
-    //.then(($element) => {
-    //        const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
-    //        cy.get( selector )
-    //          .click()
-    //})
-    //cy.get('div[aria-label="OK"]') .contains('OK') .click()
+    cy.wait(500)
+    cy.get('div[aria-colindex="1"]').contains('Recorder')
+    .then(($element) => {
+            const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
+            cy.get( selector )
+              .click()
+    })
+    cy.get('div[aria-label="OK"]') .contains('OK') .click()
 
   })
 
@@ -273,13 +238,14 @@ describe('AppBuilder Market simulation', function () {
 
     //cy.deleteRole('Treasurer')
 
-    //cy.contains('div[aria-colindex="1"]', 'Treasurer')
-    //.then(($element) => {
-    //        const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
-    //        cy.get( selector )
-    //          .click()
-    //})
-    //cy.get('div[aria-label="OK"]') .contains('OK') .click()
+    cy.wait(500)
+    cy.get('div[aria-colindex="1"]').contains('Treasurer')
+    .then(($element) => {
+            const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
+            cy.get( selector )
+              .click()
+    })
+    cy.get('div[aria-label="OK"]') .contains('OK') .click()
   })
 
   // cy.deleteRole('Architect')
