@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/echu888/travis-appbuilder#readme",
   "devDependencies": {
-    "cypress": "^4.5.0"
+    "cypress": "^4.6.0"
   },
   "dependencies": {
     "wait-on": "^5.0.0"
