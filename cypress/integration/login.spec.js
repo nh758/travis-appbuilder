@@ -10,7 +10,7 @@
 // and shows you how to use cy.request when your backend
 // validates POSTs against a CSRF token
 //
-describe('Logging In - CSRF Tokens', function () {
+describe('AppBuilder Market simulation', function () {
 
   //beforeEach(function () {
   //  Cypress.Cookies.preserveOnce('sails_sid')
@@ -87,16 +87,14 @@ describe('Logging In - CSRF Tokens', function () {
 
 
 
-
-
-  it('redirects to /site/login', () => {
+  it('(Login) redirects to /site/login', () => {
     cy.clearCookie('sails.sid');
     cy.clearCookie('io');
     cy.visit('/')
     cy.location('href').should('match', /site\/login$/)
   })
 
-  it('403 status without a valid CSRF token', function () {
+  it('(Login) 403 status without a valid CSRF token', function () {
     // first show that by not providing a valid CSRF token
     // that we will get a 403 status code
     cy.loginByCSRF('invalid-token')
@@ -104,7 +102,7 @@ describe('Logging In - CSRF Tokens', function () {
     .should('eq', 403)
   })
 
-  it('strategy #1: parse token from HTML', function () {
+  it('(Login) can parse token from HTML', function () {
     // if we cannot change our server code to make it easier
     // to parse out the CSRF token, we can simply use cy.request
     // to fetch the login page, and then parse the HTML contents
@@ -134,7 +132,7 @@ describe('Logging In - CSRF Tokens', function () {
     inDashboard()
   })
 
-  it('loads to the Users section of the OpsPortal', function () {
+  it('(OpsPortal) loads to the Users tab', function () {
 
     cy.adminLogin()
 
@@ -151,14 +149,14 @@ describe('Logging In - CSRF Tokens', function () {
 
   })
 
-  it('displays selects the Roles section of the OpsPortal', function () {
+  it('(OpsPortal) selects the Roles tab', function () {
     cy.get('li[rbac-menu="Roles"]:visible')
         .should('not.have.class', "selected")
         .click()
         .should('have.class', "selected")
   })
 
-  it('selects the Scopes section of the OpsPortal', function () {
+  it('(OpsPortal) selects the Scopes tab', function () {
     cy.get('li[rbac-menu="Scopes"]:visible')
         .should('not.have.class', "selected")
         .click()
@@ -206,26 +204,95 @@ describe('Logging In - CSRF Tokens', function () {
 
   })
 
-  it('(Market scenario) deletes market Roles', function () {
-
-    //switch to Roles tab
-    cy.get('div.op-stage')
-        .scrollTo('top')
-
-    cy.contains('div[aria-colindex="1"]', 'Architect')
-	.then(($element) => {
-
-		const index = $element.attr('aria-rowindex');
-		//cy.wrap(index).as('rowIndex')
-		//cy.get('div[aria-colindex="4"]').contains('click()
-		
-		//cy.get('div[aria-row')
-
-	
-
+  Cypress.Commands.add('deleteRole', (roleToDelete) => {
+	cy.contains('div[aria-colindex="1"]', roleToDelete)
+        .then(($element) => {
+		const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
+	 
+	   	cy.get( selector )
+	   		.click()
+	 
+	   	cy.get('div[aria-label="OK"]')
+	   		.contains('OK')
+	   		.click()
 	})
+  })
+	
+  it('(Market scenario) deletes market roles: Architect', function () {
+
+    	//scroll to top of viewport, and switch to Roles tab
+	cy.get('div.op-stage') .scrollTo('top')
+	cy.get('li[rbac-menu="Roles"]:visible') .click()
+
+	cy.deleteRole('Architect')
+	
+//	cy.contains('div[aria-colindex="1"]', 'Architect')
+//	.then(($element) => {
+//		const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
+//		cy.get( selector ).as('ArchitectRole')
+//	})
+//	cy.get('@ArchitectRole') .click()
+//	cy.get('div[aria-label="OK"]') .contains('OK') .click()
+//
+//	cy.contains('div[aria-colindex="1"]', 'Recorder')
+//	.then(($element) => {
+//		const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
+//		cy.get( selector ).as('RecorderRole')
+//	})
+//	cy.get('@RecorderRole') .click()
+//	cy.get('div[aria-label="OK"]') .contains('OK') .click()
+//
+//	cy.contains('div[aria-colindex="1"]', 'Treasurer')
+//	.then(($element) => {
+//		const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
+//		cy.get( selector ).as('TreasurerRole')
+//	})
+//	cy.get('@TreasurerRole') .click()
+//	cy.get('div[aria-label="OK"]') .contains('OK') .click()
 
   })
+
+  it('(Market scenario) deletes market Roles 2', function () {
+
+    	//scroll to top of viewport, and switch to Roles tab
+	//cy.get('div.op-stage') .scrollTo('top')
+	//cy.get('li[rbac-menu="Roles"]:visible') .click()
+
+	cy.deleteRole('Recorder')
+
+  })
+
+  it('(Market scenario) deletes market Roles 3', function () {
+
+    	//scroll to top of viewport, and switch to Roles tab
+	//cy.get('div.op-stage') .scrollTo('top')
+	//cy.get('li[rbac-menu="Roles"]:visible') .click()
+
+	cy.deleteRole('Treasurer')
+  })
+
+    
+//cy.deleteRole('Architect')
+//cy.deleteRole('Recorder')
+//cy.deleteRole('Treasurer')
+
+
+
+//    //switch to Roles tab
+//    cy.get('div.op-stage')
+//        .scrollTo('top')
+//
+//    cy.contains('div[aria-colindex="1"]', 'Architect')
+//	.then(($element) => {
+//
+//		const index = $element.attr('aria-rowindex');
+//		const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + index + '"]:visible';
+//		const $object = Cypress.$(selector);
+//		cy.get($object).click()
+//
+//	})
+//
+//  })
 
   it('(Market scenario) create roles', function () {
 //    cy.get('li[rbac-menu="Roles"]:visible')
