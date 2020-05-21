@@ -9,5 +9,4 @@ context('Window', () => {
     cy.title().should('include', 'Sails')
     cy.document().should('have.property', 'charset').and('eq', 'UTF-8')
   })
-
 })
