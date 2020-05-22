@@ -128,147 +128,80 @@ describe('AppBuilder Market simulation', function () {
       .should('have.class', 'selected')
   })
 
-  it('(Market scenario) creates market Roles', function () {
+  it('(Market Roles) creates market Roles', function () {
     // switch to Roles tab
     cy.get('li[rbac-menu="Roles"]:visible')
       .click()
 
     // add Architect role
-    cy.get('button.rbac-role-addRole')
-      .click()
-    cy.get('input[placeholder="Role Name*"]')
-      .click().focused().clear().type('Architect')
-    cy.get('textarea[placeholder="Role Description*"]')
-      .click().focused().clear().type('Able to build and edit the market app')
+    cy.get('button.rbac-role-addRole') .click()
+    cy.get('input[placeholder="Role Name*"]') .click().focused().clear().type('MKT_Architect')
+    cy.get('textarea[placeholder="Role Description*"]') .click().focused().clear().type('Able to build and edit the market app')
 
     // add various role actions
 
     // add Recorder role
-    cy.get('button.rbac-role-addRole')
-      .click()
-    cy.get('input[placeholder="Role Name*"]')
-      .click().focused().clear().type('Recorder')
-    cy.get('textarea[placeholder="Role Description*"]')
-      .click().focused().clear().type('Able to access the Treasury page and Market app')
+    cy.get('button.rbac-role-addRole') .click()
+    cy.get('input[placeholder="Role Name*"]') .click().focused().clear().type('MKT_Recorder')
+    cy.get('textarea[placeholder="Role Description*"]') .click().focused().clear().type('Able to access the Treasury page and Market app')
 
     // add various role actions
 
     // add Treasurer role
-    cy.get('button.rbac-role-addRole')
-      .click()
-    cy.get('input[placeholder="Role Name*"]')
-      .click().focused().clear().type('Treasurer')
-    cy.get('textarea[placeholder="Role Description*"]')
-      .click().focused().clear().type('Able to access Treasury page and Market app')
+    cy.get('button.rbac-role-addRole') .click()
+    cy.get('input[placeholder="Role Name*"]') .click().focused().clear().type('MKT_Treasurer')
+    cy.get('textarea[placeholder="Role Description*"]') .click().focused().clear().type('Able to access Treasury page and Market app')
 
     // add various role actions
   })
 
-  Cypress.Commands.add('deleteRole', (roleToDelete) => {
-    cy.contains('div[aria-colindex="1"]', roleToDelete)
-      .then(($element) => {
-        const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible'
-
-        cy.get(selector)
-          .click()
-
-        cy.get('div[aria-label="OK"]')
-          .contains('OK')
-          .click()
-      })
-  })
-
-  //const listOfIds = ['#first_id', '#second_id']
-  //listOfIds.forEach(id => cy.get(id).click())
-
-  function getIds() {
-     let items = []
-     return new Cypress.Promise(resolve => {
-        cy.get('div[aria-colindex="1"]')
-           .each($element =>
-              cy.wrap($element)
-                  .log($element)
-//                .invoke('click')
-                .then(id => items.push(id))
-           )
-           .then(() => resolve(items))
-     })
-  }
 
 
-  it('(Market scenario) deletes market roles: Architect', function () {
-    // scroll to top of viewport, and switch to Roles tab
-    cy.get('div.op-stage').scrollTo('top')
-    cy.get('li[rbac-menu="Roles"]:visible').click()
+  Cypress.Commands.add('createUser', (user) => {
 
-    getIds();
-    //cy.deleteRole('Architect')
+    //start off by making sure the dialog box is not visible
+    cy.get('div[aria-label="Add User"]:hidden')
 
-    cy.get('div[aria-colindex="1"]').contains('Architect')
-    .then(($element) => {
-            const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
-            cy.get( selector )
-              .click()
+    // click on + to add a user, and the dialog box should be visible
+    // <button type="button" class="btn op-btn btn-primary rbac-user-addUser"> <span class="glyphicon glyphicon-plus-sign"></span> </button>    
+    cy.get('button.rbac-user-addUser').click()
+
+    //<div class="webix_view webix_window" role="dialog" tabindex="0" aria-label="Add User" />
+    //<input id="1590136292123" type="text" value="" style="width: 184px; text-align: left;">
+    cy.get('div[aria-label="Add User"]:visible').within(() => {
+
+      // type username
+      cy.contains('label', 'Username').parent().find('input').focus().clear().type(user.name)
+      // type password
+      cy.contains('label', 'Password').parent().find('input').focus().clear().type(user.password)
+      // check 'active'
+      cy.get('button[role="checkbox"]').click()
+      // hit submit 
+      cy.get('button.webix_button').first().click()
+
+      cy.wait(500)
     })
-    cy.get('div[aria-label="OK"]') .contains('OK') .click()
+
   })
 
-  it('(Market scenario) deletes market Roles 2', function () {
+
+  it.skip('(Market Users) Create users', function () {
+
+    // Matthew (pw: QWERTYUI) as Tax Collector
+    // Luke (pw: 12345678) as Recorder
+    // Judas (pw: qwertyui) as Treasurer
+    // Cyrus (pw: !@#$%^&* ) as Architect
+
     // scroll to top of viewport, and switch to Roles tab
-    // cy.get('div.op-stage') .scrollTo('top')
-    // cy.get('li[rbac-menu="Roles"]:visible') .click()
+    //cy.get('div.op-stage').scrollTo('top')
+    cy.get('li[rbac-menu="Users"]').scrollIntoView().click()
 
-    //cy.deleteRole('Recorder')
+    cy.createUser({ name: 'Matthew', password: 'QWERTYUI' })
+    cy.createUser({ name: 'Luke',    password: '12345678' })
+    cy.createUser({ name: 'Judas',   password: 'qwertyui' })
+    cy.createUser({ name: 'Cyrus',   password: '!@#$%^&*' })
 
-    cy.wait(500)
-    cy.get('div[aria-colindex="1"]').contains('Recorder')
-    .then(($element) => {
-            const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
-            cy.get( selector )
-              .click()
-    })
-    cy.get('div[aria-label="OK"]') .contains('OK') .click()
 
-  })
-
-  it('(Market scenario) deletes market Roles 3', function () {
-    // scroll to top of viewport, and switch to Roles tab
-    // cy.get('div.op-stage') .scrollTo('top')
-    // cy.get('li[rbac-menu="Roles"]:visible') .click()
-
-    //cy.deleteRole('Treasurer')
-
-    cy.wait(500)
-    cy.get('div[aria-colindex="1"]').contains('Treasurer')
-    .then(($element) => {
-            const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + $element.attr('aria-rowindex') + '"]:visible';
-            cy.get( selector )
-              .click()
-    })
-    cy.get('div[aria-label="OK"]') .contains('OK') .click()
-  })
-
-  // cy.deleteRole('Architect')
-  // cy.deleteRole('Recorder')
-  // cy.deleteRole('Treasurer')
-
-  //    //switch to Roles tab
-  //    cy.get('div.op-stage')
-  //        .scrollTo('top')
-  //
-  //    cy.contains('div[aria-colindex="1"]', 'Architect')
-  //    .then(($element) => {
-  //
-  //            const index = $element.attr('aria-rowindex');
-  //            const selector = 'div[aria-colIndex="4"][aria-rowIndex="' + index + '"]:visible';
-  //            const $object = Cypress.$(selector);
-  //            cy.get($object).click()
-  //
-  //    })
-  //
-  //  })
-
-  it('(Market scenario) create roles', function () {
     //    cy.get('li[rbac-menu="Roles"]:visible')
     //        .click()
     //
@@ -279,6 +212,34 @@ describe('AppBuilder Market simulation', function () {
     //  .clear()
     //  .type('Market')
   })
+
+  it('(Market roles) deletes market roles', function () {
+    // scroll to top of viewport, and switch to Roles tab
+    cy.get('div.op-stage').scrollTo('top')
+    cy.get('li[rbac-menu="Roles"]:visible').click()
+
+    // In order to delete, first filter roles by our prefix "MKT_"
+    //<input placeholder="search for roles" id="1590122082717" type="text" value="" style="width: 440.5px; text-align: left;">
+    cy.get('input[placeholder="search for roles"]') .clear() .focused() .type("MKT_")
+
+    // Click on the first trashcan available, and click OK
+    //<div role="gridcell" aria-rowindex="1" aria-colindex="4" class="webix_cell"><span class="trash"><span class="webix_icon wxi-trash"></span></span></div>
+    //cy.get('div[aria-colindex="4"]:visible').first() .click()
+    cy.get('span.trash:visible').first() .click()
+    cy.get('div[aria-label="OK"]:visible') .contains('OK') .click()
+    cy.get('div[aria-label="OK"]').should('not.exist') 
+      .wait(350)
+
+    cy.get('span.trash:visible').first() .click()
+    cy.get('div[aria-label="OK"]:visible') .contains('OK') .click()
+    cy.get('div[aria-label="OK"]').should('not.exist') 
+      .wait(350)
+
+    cy.get('span.trash:visible').first() .click()
+    cy.get('div[aria-label="OK"]:visible') .contains('OK') .click()
+    cy.get('div[aria-label="OK"]').should('not.exist') 
+  })
+
 
   it('(Market scenario) creates City scope', function () {
     //    cy.get('button.rbac-scope-addScope')
