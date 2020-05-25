@@ -6,10 +6,13 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: r00t
+      MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
       # anonymous volume, for non persistent data
-      - type: volume
+      #- type: volume
+      #  target: /var/lib/mysql
+      - type: bind
+        source: ./mysql/data
         target: /var/lib/mysql
       - type: bind
         source: ./mysql/init
