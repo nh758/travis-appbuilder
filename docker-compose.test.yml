@@ -2,7 +2,7 @@ version: "3.2"
 services:
   #db: use Maria DB as our backend DB
   db:
-    image: mariadb:10.3.22
+    image: mariadb
     ports:
       - "3306:3306"
     environment:
