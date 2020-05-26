@@ -1,6 +1,6 @@
 # travis-appbuilder
 
-## Install steps
+## Installation steps
 - git clone https://github.com/echu888/travis-appbuilder.git
 - cd travis-appbuilder
 - npm install
@@ -16,9 +16,17 @@
 ## Docker images that will be used:
 - mariadb
 - arangodb
-- ab_sails:1.0 (based on skipdaddy/install-ab:developer_v2)
+- skipdaddy/install-ab:developer_v2 (based on ab_sails:1.0)
+- node:latest
+- node:6
 
-## strategy #1: Use simple scripts
+## Primary strategy: Use ab-cli
+- use ab-cli to install
+- start appbuilder
+- npm run test
+- weakness: ab-cli cannot currently specify branches
+
+## Alternate strategy: Use simple scripts
 - pull various git repositories into developer/
 - start MariaDB Docker image
 - start ArangoDB Docker image
@@ -26,23 +34,12 @@
 - npm run test
 - blocking: cannot properly "install" app_builder and populate the /app directory 
 
-## strategy #2: Use ab-cli
-- use ab-cli to install
-- start appbuilder
-- npm run test
-- weakness: ab-cli cannot currently specify branches
-
 ## Progress:
 
-### strategy #1: Using docker.sh (production):
-- successful: https://travis-ci.org/github/echu888/travis-appbuilder/builds/686864741
+### Primary strategy: Using ab-cli
+- production level is successful: https://travis-ci.org/github/echu888/travis-appbuilder/builds/686878938
+- developer level is successful: https://travis-ci.org/github/echu888/travis-appbuilder/builds/691221045
 
-### strategy #1: Using docker.sh (developer):
-- blocking: currently unable to generate proper files for /app directory
-
-### strategy #2: Using ab-cli (production):
-- successful: https://travis-ci.org/github/echu888/travis-appbuilder/builds/686878938
-
-### strategy #2: Using ab-cli (developer):
-- failure: appbuilder --develop is too verbose: https://travis-ci.org/github/echu888/travis-appbuilder/builds/686884389
-- blocking: new changes in develop branch may not be working: https://travis-ci.org/github/echu888/travis-appbuilder/builds/686891264
+### Alternate strategy: Using docker.sh
+- production level is successful: https://travis-ci.org/github/echu888/travis-appbuilder/builds/686864741
+- developer level is blocking: currently unable to generate proper files for /app directory
