@@ -83,7 +83,78 @@ describe('AppBuilder Market simulation', function () {
     //  .type('Market')
   })
 
-  it('(Market roles) deletes market roles', function () {
+  it('(Market App) creates Market app', function () {
+
+    // Click on "Menu"
+    cy.get('div.op-masthead')
+      .contains('Menu')
+      .click()
+
+    // Click on "AppBuilder"
+    cy.get('ul#op-list-menu')
+      .contains('li','AppBuilder')
+      .click()
+
+    // Click on "Add new applicaton"
+    cy.get('button')
+      .contains('Add new application')
+      .click()
+
+    cy.get('div[role="form"]:visible').within(() => {
+
+      // Fill in application name
+      cy.contains('div', 'Name')
+        .find('input')
+        .click()
+        .focused()
+        .type('Market')
+
+      // Fill in application description
+      cy.contains('div', 'Description')
+        .find('textarea')
+        .click()
+        .focused()
+        .type('A Market simulation app used for testing AppBuilder functionality')
+
+      // click Save
+      cy.contains('button', 'Save')
+        .click()
+    })
+
+  })
+
+  it('(Market App) ', function () {
+  })
+
+  it('(Market App) deletes Market app', function () {
+
+    // click on the gear, for Market
+    cy.contains('div.ab-app-list-item', 'Market')
+      .find('div.ab-app-list-edit')
+      .click()
+
+    // click on "Delete"
+    cy.contains('div.webix_list_item:visible', 'Delete')
+      .click()
+
+    // click on "Delete application -> Delete"
+    cy.get('div[aria-label="Delete application"]') 
+      .find('div[aria-label="Delete"]')
+      .click()
+  })
+
+  it('(Market Roles) deletes market roles', function () {
+
+    // Click on "Menu"
+    cy.get('div.op-masthead')
+      .contains('Menu')
+      .click()
+
+    // Click on "AppBuilder"
+    cy.get('ul#op-list-menu')
+      .contains('li','Administration')
+      .click()
+
     // scroll to top of viewport, and switch to Roles tab
     cy.get('div.op-stage').scrollTo('top')
     cy.get('li[rbac-menu="Roles"]:visible').click()
