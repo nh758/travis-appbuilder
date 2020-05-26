@@ -129,7 +129,7 @@ describe('AppBuilder Market simulation', function () {
   it('(Market App) deletes Market app', function () {
 
     // click on the gear, for Market
-    cy.contains('div.ab-app-list-item', 'Market')
+    cy.contains('div.ab-app-list-item:visible', 'Market')
       .find('div.ab-app-list-edit')
       .click()
 
@@ -138,7 +138,7 @@ describe('AppBuilder Market simulation', function () {
       .click()
 
     // click on "Delete application -> Delete"
-    cy.get('div[aria-label="Delete application"]') 
+    cy.get('div[aria-label="Delete application"]:visible') 
       .find('div[aria-label="Delete"]')
       .click()
   })
@@ -146,14 +146,16 @@ describe('AppBuilder Market simulation', function () {
   it('(Market Roles) deletes market roles', function () {
 
     // Click on "Menu"
-    cy.get('div.op-masthead')
-      .contains('Menu')
-      .click()
+    //cy.get('div.op-masthead')
+    //  .contains('Menu')
+    //  .scrollIntoView()
+    //  .click()
 
     // Click on "AppBuilder"
     cy.get('ul#op-list-menu')
       .contains('li','Administration')
-      .click()
+      .scrollIntoView()
+      .click( {force:true} )
 
     // scroll to top of viewport, and switch to Roles tab
     cy.get('div.op-stage').scrollTo('top')
