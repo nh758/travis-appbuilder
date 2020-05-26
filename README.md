@@ -1,9 +1,14 @@
 # travis-appbuilder
 
+## Dependencies
+- node.js, npm
+- Docker
+
 ## Installation steps
 - git clone https://github.com/echu888/travis-appbuilder.git
 - cd travis-appbuilder
 - npm install
+- npm install -g Hiro-Nakamura/ab-cli
 - scripts/installer.sh
 - npm run test
 
