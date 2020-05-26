@@ -1,5 +1,12 @@
 # travis-appbuilder
 
+## Install steps
+- git clone https://github.com/echu888/travis-appbuilder.git
+- cd travis-appbuilder
+- npm install
+- scripts/installer.sh
+- npm run test
+
 ## Imported directories that will be used by docker images:
 - arango
 - config
