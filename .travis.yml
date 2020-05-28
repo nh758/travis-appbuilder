@@ -9,14 +9,11 @@ services:
         - docker
 
 before_install:
-        - npm install -g Hiro-Nakamura/ab-cli
-        - docker swarm init
         - scripts/installer.sh
-
+        - docker swarm init
 
 script:
         - npm run test
 
 notifications:
         slack: digiserve-workspace:TP2WoZPOV4G2zlzgBQDF9K01
-
