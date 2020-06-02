@@ -80,7 +80,7 @@ up () {
   	--publish $MARIADB_PORT:$MARIADB_PORT \
   	--env="MYSQL_ROOT_PASSWORD=r00t" \
   	--mount source=$MARIADB_VOLUME,target=/var/lib/mysql \
-        --mount type=bind,source=$BASE_DIR/mysql/init,target=/docker-entrypoint-initdb.d,readonly \
+    --mount type=bind,source=$BASE_DIR/mysql/init,target=/docker-entrypoint-initdb.d,readonly \
   	mariadb
   #	#--publish 5001:3306 \
   echo ""
@@ -115,8 +115,8 @@ up () {
   echo ""
 
 
-  echo "Linking config file"
-  ln -sf ../config $BASE_DIR
+  #echo "Linking config file"
+  #ln -sf ../config $BASE_DIR
 
   echo "Creating Docker container: $EMAIL_IMAGE"
   EMAIL_COMMAND="node app.js"
@@ -157,12 +157,18 @@ up () {
   echo "Creating Docker container: $SAILS_IMAGE"
   SAILS_COMMAND="node --inspect --max-old-space-size=2048 --stack-size=2048 app_waitForMySql.js"
   docker run \
+  	--detach \
   	--name $SAILS_IMAGE \
   	--network $NETWORK_NAME \
   	--publish $SAILS_PORT:$SAILS_PORT \
+  	--publish 9229:9229 \
 	--env COTE_DISCOVERY_REDIS_HOST=redis \
   	--mount type=bind,source=$BASE_DIR/app,target=/app \
   	--mount type=bind,source=$BASE_DIR/config/local.js,target=/app/config/local.js \
+  	--mount type=bind,source=$BASE_DIR/data,target=/app/data \
+  	--mount type=bind,source=$BASE_DIR/developer/app_builder,target=/app/node_modules/app_builder \
+  	--mount type=bind,source=$BASE_DIR/developer/appdev-core,target=/app/node_modules/appdev-core \
+  	--mount type=bind,source=$BASE_DIR/developer/appdev-opsportal,target=/app/node_modules/appdev-opsportal \
   	skipdaddy/install-ab:developer_v2 \
 	$SAILS_COMMAND
 
