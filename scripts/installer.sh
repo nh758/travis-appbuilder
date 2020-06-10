@@ -28,3 +28,5 @@ appbuilder install $WORKING_DIR \
 #link in test configuration for docker swarm
 ln -s ../docker-compose.test.yml workdir/docker-compose.test.yml
 
+#show GitHub commit information
+scripts/commit_info.sh
