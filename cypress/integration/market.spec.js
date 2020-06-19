@@ -19,7 +19,9 @@ describe('AppBuilder Market simulation', function () {
     // Click on "Menu"
     cy.get('#op-menu-widget') .should('not.be.visible')
     cy.get('div#op-masthead-menu') .contains('Menu') .click()
+    //WORKAROUND:
     cy.get('#op-menu-widget') .invoke('attr', 'style', 'transition: left 0.2s ease 0s; left:0px')
+    //WORKAROUND
     cy.get('#op-menu-widget') .should('be.visible')
 
     // Click on "AppBuilder"
@@ -34,7 +36,7 @@ describe('AppBuilder Market simulation', function () {
     //WORKAROUND
   })
 
-  Cypress.Commands.add('createUser', (user) => {
+  Cypress.Commands.add('addUser', (user) => {
     // start off by making sure the dialog box is not visible
     cy.get('div[aria-label="Add User"]:hidden')
 
@@ -54,14 +56,28 @@ describe('AppBuilder Market simulation', function () {
       // hit submit
       cy.get('button.webix_button').first().click()
 
+      //TODO: can we re-write this to remove the wait?
       cy.wait(500)
     })
   })
 
+  Cypress.Commands.add('addRole', (role, description) => {
+    cy.get('button.rbac-role-addRole').click()
+    cy.get('input[placeholder="Role Name*"]').click().focused().clear().type(role)
+    cy.get('textarea[placeholder="Role Description*"]').click().focused().clear().type(description)
+
+
+  })
+
   Cypress.Commands.add('deleteRole', () => {
+    // <div role="gridcell" aria-rowindex="1" aria-colindex="4" class="webix_cell">
+    //   <span class="trash"><span class="webix_icon wxi-trash">
     cy.get('span.trash:visible').first().click()
     cy.get('div[aria-label="OK"]:visible').contains('OK').click()
     cy.get('div[aria-label="OK"]').should('not.exist')
+    //WORKAROUND: without this slight delay, we get intermittent failures
+    // as the DOM hasn't refreshed in time after the delay
+      .wait(350)
   })
 
   Cypress.Commands.add('addObject', (objectName) => {
@@ -70,37 +86,61 @@ describe('AppBuilder Market simulation', function () {
     cy.contains('div.webix_win_content', 'Add new object')
       .find('input[placeholder="Object name"]') .click() .focused() .type(objectName)
 
+    // confirmation button
     cy.contains('button.webix_button', '*Add Object') .click()
     cy.contains('div.ab-object-list-item', objectName)
   })
 
   Cypress.Commands.add('addObjectColumnString', (columnName) => {
-
     cy.contains('button.webix_button', 'Add new column') .click()
+
+    // change type to "Single line text"
     //cy.contains('div[aria-label="*Field type"]', '*Single line text').click()
-    cy.contains('div.webix_form', '*short string value').within(() => {
-      cy.contains('div.webix_el_box', 'Label')
-        .find('input') .click() .focused() .type(columnName)
-      //cy.contains('div.webix_el_box', 'Field Name')
-      //  .find('input') .click() .focused() .type('Name')
-    })
+
+    cy.contains('div.webix_form:visible', "*short string value")
+      .find('input[placeholder="Label"]')
+      .click()
+      .type(columnName)
+
     cy.contains('button.webix_button', 'Add Column') .scrollIntoView() .click()
 
   })
 
   Cypress.Commands.add('addObjectColumnNumber', (columnName) => {
     cy.contains('button.webix_button', 'Add new column') .click()
+
+    // change type to "Number"
     cy.contains('div[aria-label="*Field type"]', '*Single line text').click()
     cy.contains('div.webix_list_item', '*Number').click()
 
     //make sure we're on the correct page of the webix multiview
-    cy.contains('div.webix_form', '*A Float or Integer Value').within(() => {
-   
-      cy.contains('div.webix_el_box:visible', 'Label')
-        .find('input') .click() .focused() .type(columnName)
-      //cy.contains('div.webix_el_box', 'Field Name')
-      //  .find('input') .click() .focused() .type(columnName)
-    })
+    cy.contains('div.webix_form:visible', "*A Float or Integer Value")
+      .find('input[placeholder="Label"]')
+      .click()
+      .type(columnName)
+
+    cy.contains('button.webix_button', 'Add Column') .scrollIntoView() .click()
+  })
+
+  Cypress.Commands.add('addObjectRelation', (other) => {
+    cy.contains('button.webix_button', 'Add new column') .click()
+
+    // change type to "Connect to another record"
+    cy.contains('div[aria-label="*Field type"]', '*Single line text').click()
+    cy.contains('div.webix_list_item', '*Connect to another record').click()
+
+    //make sure we're on the correct page of the webix multiview
+    cy.contains('div.webix_form:visible','*Connect two data objects together')
+      .find('input[placeholder="Label"]')
+      .click()
+      .type(other)
+
+    //connect the other object
+    cy.get('div.webix_win_body:visible div.webix_multiview')
+      .contains('div.webix_inp_static:visible', '*Select object') .click()
+
+    cy.get('div.webix_view.webix_window.webix_popup:visible')
+      .contains('div.webix_list_item:visible', other) .click()
 
     cy.contains('button.webix_button', 'Add Column') .scrollIntoView() .click()
   })
@@ -109,29 +149,15 @@ describe('AppBuilder Market simulation', function () {
   // Test suite
   // ==========
 
-  it('(Market Roles) creates market Roles', function () {
+  it('(Market Roles) creates market roles', function () {
     // switch to Roles tab
     cy.get('li[rbac-menu="Roles"]:visible')
       .click()
 
-    // add Architect role
-    cy.get('button.rbac-role-addRole').click()
-    cy.get('input[placeholder="Role Name*"]').click().focused().clear().type('MKT_Architect')
-    cy.get('textarea[placeholder="Role Description*"]').click().focused().clear().type('Able to build and edit the market app')
-
-    // add various role actions
-
-    // add Recorder role
-    cy.get('button.rbac-role-addRole').click()
-    cy.get('input[placeholder="Role Name*"]').click().focused().clear().type('MKT_Recorder')
-    cy.get('textarea[placeholder="Role Description*"]').click().focused().clear().type('Able to access the Treasury page and Market app')
-
-    // add various role actions
-
-    // add Treasurer role
-    cy.get('button.rbac-role-addRole').click()
-    cy.get('input[placeholder="Role Name*"]').click().focused().clear().type('MKT_Treasurer')
-    cy.get('textarea[placeholder="Role Description*"]').click().focused().clear().type('Able to access Treasury page and Market app')
+    // add Architect, Recorder, Treasurer roles
+    cy.addRole('MKT_Architect', 'Able to build and edit the market app')
+    cy.addRole('MKT_Recorder', 'Able to access the Treasury page and Market app')
+    cy.addRole('MKT_Treasurer', 'Able to access Treasury page and Market app')
 
     // add various role actions
   })
@@ -147,30 +173,17 @@ describe('AppBuilder Market simulation', function () {
     // Luke (pw: 12345678) as Recorder
     // Judas (pw: qwertyui) as Treasurer
     // Cyrus (pw: !@#$%^&* ) as Architect
-    cy.createUser({ name: 'Matthew', password: 'QWERTYUI' })
-    cy.createUser({ name: 'Luke', password: '12345678' })
-    cy.createUser({ name: 'Judas', password: 'qwertyui' })
-    cy.createUser({ name: 'Cyrus', password: '!@#$%^&*' })
+    cy.addUser({ name: 'Matthew', password: 'QWERTYUI' })
+    cy.addUser({ name: 'Luke', password: '12345678' })
+    cy.addUser({ name: 'Judas', password: 'qwertyui' })
+    cy.addUser({ name: 'Cyrus', password: '!@#$%^&*' })
 
-    // cy.get('li[rbac-menu="Roles"]:visible').click()
-    // cy.get('button.rbac-role-addRole').click()
-    // cy.get('input[placeholder="Enter a Name*"]').clear().type('Market')
   })
 
   it('(Market App) creates Market app', function () {
 
+    //// select leftmenu -> AppBuilder
     cy.appSelect('li[area="site-default-appbuilder"]')
-    //// Click on "Menu"
-    //cy.get('#op-menu-widget') .should('not.be.visible')
-    //cy.get('div.op-masthead') .contains('Menu') .click()
-    //cy.get('#op-menu-widget') .should('be.visible')
-
-    //// Click on "AppBuilder"
-    //cy.get('li[area="site-default-appbuilder"]') .click()
-    ////WORKAROUND: the following invoke() is to help with flaky behavior when running headless tests
-    //// for some reason the menu does not hide itself only when running in this mode 
-    //cy.get('#op-menu-widget') .invoke('attr', 'style', 'transition: left 0.2s ease 0s;')
-    //cy.get('#op-menu-widget') .should('not.be.visible')
 
     // Click on "Add new applicaton"
     cy.get('button') .contains('Add new application') .click()
@@ -215,7 +228,6 @@ describe('AppBuilder Market simulation', function () {
     //    Address      : short string value
     //    NationalID   : short string value
     cy.addObject("Vendor")
-
     cy.addObjectColumnString('Name')
     cy.addObjectColumnString('Address')
     cy.addObjectColumnString('NationalID')
@@ -225,7 +237,6 @@ describe('AppBuilder Market simulation', function () {
     //    Name            : short string value
     //    WholesalePrice  : Number
     cy.addObject("Goods")
-
     cy.addObjectColumnString('Name')
     cy.addObjectColumnNumber('WholesalePrice')
 
@@ -235,17 +246,20 @@ describe('AppBuilder Market simulation', function () {
     //    *Vendor
     //    QuantityInStock  : Number
     cy.addObject("Inventory")
-
     cy.addObjectColumnNumber('QuantityInStock')
+    cy.addObjectRelation('Goods')  //one Inventory to one Goods
+    cy.addObjectRelation('Vendor') //one Inventory to one Vendor 
 
     //------------------------------------------
     // Add a new Transaction object
-    //    *Inventory
+    //    *Inventory ??
     //    Date
     //    Time
     //    QuantitySold
     //    PriceSold
     cy.addObject("Transaction")
+    cy.addObjectColumnNumber('QuantitySold')
+    cy.addObjectColumnNumber('PriceSold')
 
     //Create Queries
     //VendorInventory Vendors with Inventory
@@ -345,39 +359,21 @@ describe('AppBuilder Market simulation', function () {
 
   it('(Market Roles) deletes market roles', function () {
 
+    // select leftmenu -> AppBuilder
     cy.appSelect('li[area="site-default-admin"]')
-
-    // Click on "AppBuilder"
-    //cy.get('ul#op-list-menu') .contains('li','Administration') .scrollIntoView() .click()
-    //cy.get('ul#op-list-menu') .contains('li','Administration') .scrollIntoView() .click( {force:true} )
 
     // scroll to top of viewport, and switch to Roles tab
     cy.get('div.op-stage').scrollTo('top')
     cy.get('li[rbac-menu="Roles"]:visible').click()
 
     // In order to delete, first filter roles by our prefix "MKT_"
-    // <input placeholder="search for roles" id="1590122082717" type="text" value="" style="width: 440.5px; text-align: left;">
+    // <input placeholder="search for roles" id="1590122082717" type="text" value="">
     cy.get('input[placeholder="search for roles"]').clear().focused().type('MKT_')
 
     // Click on the first trashcan available, and click OK
-    // <div role="gridcell" aria-rowindex="1" aria-colindex="4" class="webix_cell"><span class="trash"><span class="webix_icon wxi-trash"></span></span></div>
-    // cy.get('div[aria-colindex="4"]:visible').first() .click()
     cy.deleteRole()
-    //cy.get('span.trash:visible').first().click()
-    //cy.get('div[aria-label="OK"]:visible').contains('OK').click()
-    //cy.get('div[aria-label="OK"]').should('not.exist')
-      .wait(350)
-
     cy.deleteRole()
-    //cy.get('span.trash:visible').first().click()
-    //cy.get('div[aria-label="OK"]:visible').contains('OK').click()
-    //cy.get('div[aria-label="OK"]').should('not.exist')
-      .wait(350)
-
     cy.deleteRole()
-    //cy.get('span.trash:visible').first().click()
-    //cy.get('div[aria-label="OK"]:visible').contains('OK').click()
-    //cy.get('div[aria-label="OK"]').should('not.exist')
   })
 
 })
