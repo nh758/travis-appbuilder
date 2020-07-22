@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 Cypress.Cookies.defaults({ whitelist: ['sails.sid', 'io'] })
 
-describe('AppBuilder OpsPortal tests', function () {
+describe('OpsPortal tests', function () {
   before(() => {
     cy.performLogin('admin', 'admin')
   })
