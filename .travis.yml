@@ -11,6 +11,11 @@ services:
 before_install:
         - docker swarm init
         - scripts/installer.sh
+        # after running the installer, switch branches, and re-run npm install/build commands
+        - scripts/git_checkout_branch.sh app_builder noArango
+        - scripts/npm_install_versioned.sh app_builder 6.12.3 run build
+        - scripts/git_checkout_branch.sh appdev-opsportal noArango
+        - scripts/npm_install_versioned.sh appdev-opsportal 13 install
 
 script:
         - npm run test
