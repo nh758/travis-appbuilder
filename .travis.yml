@@ -15,5 +15,8 @@ before_install:
 script:
         - npm run test
 
+after_failure:
+        - scripts/dump_logs.sh
+
 notifications:
         slack: digiserve-workspace:TP2WoZPOV4G2zlzgBQDF9K01
