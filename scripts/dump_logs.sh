@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #docker ps --filter name=ab_ --format "table {{.ID}}: {{.Names}}"
-CONTAINERS=$(docker ps --quiet --filter name=ab_)
+#CONTAINERS=$(docker ps --quiet --filter name=ab_)
+CONTAINERS=sails
 
 for CONTAINER in $CONTAINERS 
 do
