@@ -13,7 +13,7 @@ describe('Todo List simulation', function () {
   // Test suite
   // ==========
 
-  it('(Todo App) creates Todo app', function () {
+  it.skip('(Todo App) creates Todo app', function () {
     /// / select leftmenu -> AppBuilder
     cy.appSelect('li[area="site-default-appbuilder"]')
 
@@ -38,7 +38,7 @@ describe('Todo List simulation', function () {
     })
   })
 
-  it('(Todo App) builds the Todo app', function () {
+  it.skip('(Todo App) builds the Todo app', function () {
     // Create new AppBuilder app: Todo
 
     // click on the newly created App
@@ -113,12 +113,12 @@ describe('Todo List simulation', function () {
       .contains('div.ab-app-list-item', 'Todo')
   })
 
-  it('(Todo App) uses the Todo app', function () {
+  it.skip('(Todo App) uses the Todo app', function () {
     /// / select leftmenu -> AppBuilder
     cy.appSelect('li[area="ab-todo"]')
   })
 
-  it('(Todo App) deletes Todo app', function () {
+  it.skip('(Todo App) deletes Todo app', function () {
     /// / select leftmenu -> AppBuilder
     cy.appSelect('li[area="site-default-appbuilder"]')
 
