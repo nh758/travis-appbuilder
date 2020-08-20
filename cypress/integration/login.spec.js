@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-Cypress.Cookies.defaults({ whitelist: ['sails.sid', 'io'] })
+Cypress.Cookies.defaults({ preserve: ['sails.sid', 'io'] })
 
 describe('Login scenarios', function () {
   const username = 'admin'
