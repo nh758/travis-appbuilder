@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/echu888/travis-appbuilder.git"
+    "url": "git+https://github.com/appdevdesigns/travis-appbuilder.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/echu888/travis-appbuilder/issues"
+    "url": "https://github.com/appdevdesigns/travis-appbuilder/issues"
   },
-  "homepage": "https://github.com/echu888/travis-appbuilder#readme",
+  "homepage": "https://github.com/appdevdesigns/travis-appbuilder#readme",
   "devDependencies": {
     "cypress": "^5.0.0",
     "eslint": "^7.7.0",
