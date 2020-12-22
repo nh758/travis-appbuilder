@@ -21,7 +21,8 @@ describe('Login scenarios', function () {
 
   // A utility function to check that we are seeing the dashboard page
   const inDashboard = () => {
-    cy.location('href').should('be', Cypress.config().baseUrl)
+    //cy.location('href').should('be', Cypress.config().baseUrl)
+    //cy.url().should('eq', Cypress.config().baseUrl) 
   }
 
   it('loads to Sails', () => {

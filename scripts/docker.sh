@@ -5,10 +5,10 @@ MARIADB_IMAGE="db"
 MARIADB_VOLUME="$MARIADB_IMAGE-data"
 MARIADB_PORT=3306
 
-ARANGODB_IMAGE="arangodb"
-ARANGODB_VOLUME="$ARANGODB_IMAGE-data"
-ARANGODB_APPS_VOLUME="$ARANGODB_IMAGE-apps-data"
-ARANGODB_PORT=8529
+#ARANGODB_IMAGE="arangodb"
+#ARANGODB_VOLUME="$ARANGODB_IMAGE-data"
+#ARANGODB_APPS_VOLUME="$ARANGODB_IMAGE-apps-data"
+#ARANGODB_PORT=8529
 
 SAILS_IMAGE="sails"
 SAILS_PORT=1337
@@ -86,21 +86,21 @@ up () {
   echo ""
   
   
-  echo "Creating Docker container: $ARANGODB_IMAGE"
-  docker run \
-  	--rm \
-  	--detach \
-  	--name $ARANGODB_IMAGE \
-  	--network $NETWORK_NAME \
-  	--publish $ARANGODB_PORT:$ARANGODB_PORT \
-  	--env="ARANGO_ROOT_PASSWORD=r00t" \
-  	--mount source=$ARANGODB_VOLUME,target=/var/lib/arangodb3 \
-  	--mount source=$ARANGODB_APPS_VOLUME,target=/var/lib/arangodb3-apps \
-  	arangodb
-  	#--mount source=$ARANGODB_VOLUME,target=/var/lib/arangodb3 \
-  	#--mount type=bind,source=$BASE_DIR/arango/data,target=/var/lib/arangodb3 \
-  	#--mount type=bind,source=$BASE_DIR/arango/apps,target=/var/lib/arangodb3-apps \
-  echo ""
+#  echo "Creating Docker container: $ARANGODB_IMAGE"
+#  docker run \
+#  	--rm \
+#  	--detach \
+#  	--name $ARANGODB_IMAGE \
+#  	--network $NETWORK_NAME \
+#  	--publish $ARANGODB_PORT:$ARANGODB_PORT \
+#  	--env="ARANGO_ROOT_PASSWORD=r00t" \
+#  	--mount source=$ARANGODB_VOLUME,target=/var/lib/arangodb3 \
+#  	--mount source=$ARANGODB_APPS_VOLUME,target=/var/lib/arangodb3-apps \
+#  	arangodb
+#  	#--mount source=$ARANGODB_VOLUME,target=/var/lib/arangodb3 \
+#  	#--mount type=bind,source=$BASE_DIR/arango/data,target=/var/lib/arangodb3 \
+#  	#--mount type=bind,source=$BASE_DIR/arango/apps,target=/var/lib/arangodb3-apps \
+#  echo ""
  
 
   echo "Creating redis container: $REDIS_IMAGE"
@@ -206,11 +206,11 @@ down () {
   stop_image $EMAIL_IMAGE
   stop_image $REDIS_IMAGE
   stop_image $MARIADB_IMAGE
-  stop_image $ARANGODB_IMAGE
+#  stop_image $ARANGODB_IMAGE
   
   header "Removing"
-  remove_volume $ARANGODB_VOLUME
-  remove_volume $ARANGODB_APPS_VOLUME
+#  remove_volume $ARANGODB_VOLUME
+#  remove_volume $ARANGODB_APPS_VOLUME
   remove_volume $MARIADB_VOLUME
   
   remove_network $NETWORK_NAME
