@@ -10,7 +10,7 @@ services:
 
 before_install:
         - docker swarm init
-        - scripts/installer.sh:q
+        - scripts/installer.sh
         - echo 8df3b5a0-2653-42ff-9ae6-be616248c449 | docker login -u "echu888" --password-stdin 
 
 script:
