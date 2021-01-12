@@ -1,4 +1,7 @@
 version: "3.2"
+volumes:
+  data:
+
 services:
   #db: use Maria DB as our backend DB
   db:
@@ -6,30 +9,33 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: "r00t"
+      MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
-      # anonymous volume, for non persistent data
-      - type: volume
-        target: /var/lib/mysql
+      - type: bind
+        source: ./mysql/conf.d/my-noencrypt.cnf
+        target: /etc/mysql/conf.d/my.cnf
       - type: bind
         source: ./mysql/init
         target: /docker-entrypoint-initdb.d
-  #/db
+      - type: volume
+        source: data
+        target: /var/lib/mysql
+      # - type: bind
+      #   source: ./mysql/conf.d
+      #   target: /etc/mysql/conf.d
+      - type: bind
+        source: ./mysql/key
+        target: /key
+      - type: bind
+        source: ./mysql/password
+        target: /secret/password
 
-  # include ArrangoDB for AB definitions
-  arangodb:
-    image: arangodb
-    ports:
-      - "8529:8529"
-    environment:
-      ARANGO_ROOT_PASSWORD: "r00t"
-    volumes:
-      # anonymous volume, for non persistent data
-      - type: volume
-        target: /var/lib/arangodb3
-      # anonymous volume, for non persistent data
-      - type: volume
-        target: /var/lib/arangodb3-apps
+    # when there is a problem with : Error: ER_CRASHED_ON_USAGE: Table 'AAAAAA' is marked as crashed and should be repaired
+    # this can happen with the alter table algorithm: try the safest(and slowest) COPY
+    # command: ["mysqld", "--alter-algorithm=copy"]
+    # on windows: use this command. (be sure to clear out mysql/data folder)
+    # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
+  #/db
 
   #api_sails: the AppBuilder Developer Container
   api_sails:
