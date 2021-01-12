@@ -125,7 +125,7 @@ up () {
   	--name $EMAIL_IMAGE \
   	--network $NETWORK_NAME \
 	--env COTE_DISCOVERY_REDIS_HOST=redis \
-  	--mount type=bind,source=$BASE_DIR/developer/notification_email,target=/app \
+  	-v type=bind,source=$BASE_DIR/developer/notification_email,target=/app \
   	--mount type=bind,source=$BASE_DIR/config/local.js,target=/app/config/local.js \
 	-w /app \
   	node \
@@ -142,7 +142,7 @@ up () {
   	--name $PM_IMAGE \
   	--network $NETWORK_NAME \
 	--env COTE_DISCOVERY_REDIS_HOST=redis \
-  	--mount type=bind,source=$BASE_DIR/developer/process_manager,target=/app \
+  	-v type=bind,source=$BASE_DIR/developer/process_manager,target=/app \
   	--mount type=bind,source=$BASE_DIR/config/local.js,target=/app/config/local.js \
 	-w /app \
   	node \
@@ -163,12 +163,12 @@ up () {
   	--publish $SAILS_PORT:$SAILS_PORT \
   	--publish 9229:9229 \
 	--env COTE_DISCOVERY_REDIS_HOST=redis \
-  	--mount type=bind,source=$BASE_DIR/app,target=/app \
+  	-v type=bind,source=$BASE_DIR/app,target=/app \
   	--mount type=bind,source=$BASE_DIR/config/local.js,target=/app/config/local.js \
-  	--mount type=bind,source=$BASE_DIR/data,target=/app/data \
-  	--mount type=bind,source=$BASE_DIR/developer/app_builder,target=/app/node_modules/app_builder \
-  	--mount type=bind,source=$BASE_DIR/developer/appdev-core,target=/app/node_modules/appdev-core \
-  	--mount type=bind,source=$BASE_DIR/developer/appdev-opsportal,target=/app/node_modules/appdev-opsportal \
+  	-v type=bind,source=$BASE_DIR/data,target=/app/data \
+  	-v type=bind,source=$BASE_DIR/developer/app_builder,target=/app/node_modules/app_builder \
+  	-v type=bind,source=$BASE_DIR/developer/appdev-core,target=/app/node_modules/appdev-core \
+  	-v type=bind,source=$BASE_DIR/developer/appdev-opsportal,target=/app/node_modules/appdev-opsportal \
   	skipdaddy/install-ab:developer_v2 \
 	$SAILS_COMMAND
 
