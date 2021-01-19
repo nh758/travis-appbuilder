@@ -1,9 +1,6 @@
-version: "3.2"
-volumes:
-  data:
+version: "3.6"
 
 services:
-  #db: use Maria DB as our backend DB
   db:
     image: mariadb
     ports:
@@ -11,33 +8,14 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
-      - type: bind
-        source: ./mysql/conf.d/my-noencrypt.cnf
-        target: /etc/mysql/conf.d/my.cnf
-      - type: bind
-        source: ./mysql/init
-        target: /docker-entrypoint-initdb.d
-      - type: volume
-        source: data
-        target: /var/lib/mysql
-      # - type: bind
-      #   source: ./mysql/conf.d
-      #   target: /etc/mysql/conf.d
-      - type: bind
-        source: ./mysql/key
-        target: /key
-      - type: bind
-        source: ./mysql/password
-        target: /secret/password
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./mysql/password:/secret/password
+      #disabling the following mount points, in order to MariaDB container with non-persistent writes
+      #- ./mysql/conf.d/my-noencrypt.cnf:/etc/mysql/conf.d/my.cnf
+      #- ./mysql/data:/var/lib/mysql
+      #- ./mysql/conf.d:/etc/mysql/conf.d
+      #- ./mysql/key:/key
 
-    # when there is a problem with : Error: ER_CRASHED_ON_USAGE: Table 'AAAAAA' is marked as crashed and should be repaired
-    # this can happen with the alter table algorithm: try the safest(and slowest) COPY
-    # command: ["mysqld", "--alter-algorithm=copy"]
-    # on windows: use this command. (be sure to clear out mysql/data folder)
-    # command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
-  #/db
-
-  #api_sails: the AppBuilder Developer Container
   api_sails:
     image: skipdaddy/install-ab:developer_v2
     deploy:
@@ -50,81 +28,40 @@ services:
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
-      - type: bind
-        source: ./app
-        target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
-      - type: bind
-        source: ./data
-        target: /app/data
-      - type: bind
-        source: ./developer/app_builder
-        target: /app/node_modules/app_builder
-      - type: bind
-        source: ./developer/appdev-core
-        target: /app/node_modules/appdev-core
-      - type: bind
-        source: ./developer/appdev-opsportal
-        target: /app/node_modules/appdev-opsportal
-    # use app_cli.js when you need to connect to the cli of the container
-    # and then run setup on a sub module. This is especially useful when
-    # sails is crashing and won't let you connect.
-    # command: ["node", "app_cli.js"]
+      - ./app:/app
+      - ./config/local.js:/app/config/local.js
+      - ./data:/app/data
+      - ./developer/app_builder:/app/node_modules/app_builder
+      - ./developer/appdev-core:/app/node_modules/appdev-core
+      - ./developer/appdev-opsportal:/app/node_modules/appdev-opsportal
     command: ["node", "--inspect", "--max-old-space-size=2048", "--stack-size=2048", "app_waitForMySql.js"]
-  #/api_sails
 
-  #redis: use redis to allow cote services to find each other across a swarm
   redis:
     image: redis
-    #ports:
-    #  - 6379:6379
     volumes:
-      - type: bind
-        source: ./redis/data
-        target: /data
+      - ./redis/data:/data
     command: redis-server --appendonly yes
-  #/redis
 
-  #notification_email
   notification_email:
     image: node
-    # ports:
-      # - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
-      - type: bind
-        source: ./developer/notification_email
-        target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
+      - ./developer/notification_email:/app
+      - ./config/local.js:/app/config/local.js
     depends_on:
       - redis
     working_dir: /app
-    # command: [ "node", "--inspect-brk=0.0.0.0:9229", "app.js" ]
     command: [ "node", "app.js" ]
-  #/notification_email
 
-  #process_manager: (AppBuilder) a micro service to manage our process tasks
   process_manager:
     image: node
-    # ports:
-    #   - "9229:9229"
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
-      - type: bind
-        source: ./developer/process_manager
-        target: /app
-      - type: bind
-        source: ./config/local.js
-        target: /app/config/local.js
+      - ./developer/process_manager:/app
+      - ./config/local.js:/app/config/local.js
     depends_on:
       - redis
     working_dir: /app
-    # command: [ "node", "--inspect-brk=0.0.0.0:9229", "app.js" ]
     command: [ "node", "app.js" ]
-  #/process_manager
