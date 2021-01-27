@@ -4,7 +4,6 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "cleardb": "cd workdir; docker-compose -fv",
     "interactive": "cypress open",
     "headless": "cypress run",
     "pretest": "cd workdir; docker stack deploy -c docker-compose.test.yml test",
@@ -22,7 +21,7 @@
   },
   "homepage": "https://github.com/appdevdesigns/travis-appbuilder#readme",
   "devDependencies": {
-    "cypress": "^6.2.1",
+    "cypress": "^6.3.0",
     "eslint": "^7.7.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-cypress": "^2.11.1",
