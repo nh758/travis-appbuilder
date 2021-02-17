@@ -22,8 +22,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # - name: Initialize docker swarm 
-      # run: docker swarm init
+      - name: Initialize docker swarm 
+        run: docker swarm init
         
       - name: Login to docker hub 
         run: echo "$DOCKERHUB_PW" | docker login -u "$DOCKERHUB_USER" --password-stdin
