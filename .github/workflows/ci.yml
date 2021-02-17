@@ -19,8 +19,8 @@ jobs:
       DOCKERHUB_PW: 09235751-050f-4851-a295-803790e79652
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
 
       - name: Initialize docker swarm 
         run: docker swarm init
