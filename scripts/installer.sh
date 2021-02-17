@@ -3,8 +3,8 @@
 WORKING_DIR=workdir
 
 #update installer
-time \
-npm install -g Hiro-Nakamura/ab-cli
+#time \
+#npm install -g joshAppDev/ab-cli
 
 #run installer
 time \
@@ -14,7 +14,7 @@ appbuilder install $WORKING_DIR \
 	--travisCI \
 	--port=1337 \
 	--db.port=3306 \
-	--db.password=r00t \
+	--db.password=root \
 	--db.expose=true \
 	--db.encryption=false \
 	--arango.port=8529 \
