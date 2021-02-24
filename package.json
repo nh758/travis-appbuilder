@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "pull": "appbuilder install workdir --V1 --develop --travisCI --port=1337 --db.port=3306 --db.password=root --db.expose=true --db.encryption=false --arango.port=8529 --arango.password=r00t --arango.expose=false --nginx.enable=false --nginx.sslType=none --smtp.enable=false --smtp.auth=plain --stack=ab",
     "interactive": "cypress open",
     "headless": "cypress run",
     "pretest": "cd workdir; docker stack deploy -c docker-compose.test.yml test",
@@ -21,7 +22,6 @@
   },
   "homepage": "https://github.com/appdevdesigns/travis-appbuilder#readme",
   "devDependencies": {
-    "ab-cli": "github:Hiro-Nakamura/ab-cli",
     "cypress": "^6.5.0",
     "eslint": "^7.7.0",
     "eslint-config-standard": "^14.1.1",
@@ -32,6 +32,7 @@
     "eslint-plugin-standard": "^4.0.1"
   },
   "dependencies": {
+    "ab-cli": "github:Hiro-Nakamura/ab-cli",
     "wait-on": "^5.2.0"
   }
 }
