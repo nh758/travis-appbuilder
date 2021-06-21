@@ -1,4 +1,4 @@
-version: "3.6"
+version: "3.2"
 
 services:
   db:
@@ -8,8 +8,12 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /secret/password
     volumes:
-      - ./mysql/init:/docker-entrypoint-initdb.d
-      - ./mysql/password:/secret/password
+      - type: bind
+        source: ./mysql/init
+        target: /docker-entrypoint-initdb.d
+      - type: bind
+        source: ./mysql/password
+        target: /secret/password
       #disabling the following mount points, in order to MariaDB container with non-persistent writes
       #- ./mysql/conf.d/my-noencrypt.cnf:/etc/mysql/conf.d/my.cnf
       #- ./mysql/data:/var/lib/mysql
@@ -17,7 +21,10 @@ services:
       #- ./mysql/key:/key
 
   api_sails:
-    image: skipdaddy/install-ab:developer_v2
+    image: digiserve/ab-sails-api:test
+    depends_on:
+      - db
+      - redis
     deploy:
       replicas: 1
       restart_policy:
@@ -28,40 +35,44 @@ services:
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
-      - ./app:/app
-      - ./config/local.js:/app/config/local.js
-      - ./data:/app/data
-      - ./developer/app_builder:/app/node_modules/app_builder
-      - ./developer/appdev-core:/app/node_modules/appdev-core
-      - ./developer/appdev-opsportal:/app/node_modules/appdev-opsportal
-    command: ["node", "--inspect", "--max-old-space-size=2048", "--stack-size=2048", "app_waitForMySql.js"]
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
+      - type: bind
+        source: ./mysql/password
+        target: /secret/password
+      - type: bind
+        source: ./data
+        target: /app/data
 
   redis:
-    image: redis
+    image: docker.io/library/redis:6.2.1
     volumes:
-      - ./redis/data:/data
+      - type: bind
+        source: ./redis/data
+        target: /data
     command: redis-server --appendonly yes
 
   notification_email:
-    image: node
+    image: docker.io/digiserve/ab-notification-email
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
-      - ./developer/notification_email:/app
-      - ./config/local.js:/app/config/local.js
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
     depends_on:
       - redis
-    working_dir: /app
-    command: [ "node", "app.js" ]
+      - api_sails
 
   process_manager:
-    image: node
+    image: docker.io/digiserve/ab-process-manager:latest
     environment:
       - COTE_DISCOVERY_REDIS_HOST=redis
     volumes:
-      - ./developer/process_manager:/app
-      - ./config/local.js:/app/config/local.js
+      - type: bind
+        source: ./config/local.js
+        target: /app/config/local.js
     depends_on:
       - redis
-    working_dir: /app
-    command: [ "node", "app.js" ]
+      - api_sails
