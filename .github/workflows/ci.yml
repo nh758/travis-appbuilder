@@ -2,43 +2,43 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+  # branches: [master]
   pull_request:
-    branches: [ master ]
+    # branches: [master]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-
   build:
     runs-on: ubuntu-latest
-    env:
-      DOCKERHUB_USER: echu888
-      DOCKERHUB_PW: 09235751-050f-4851-a295-803790e79652
-
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
 
       - name: Install npm packages
         run: npm install
-
-      - name: Initialize docker swarm 
+      - name: Checkout ab-production-image
+        uses: actions/checkout@v2
+        with:
+          repository: appdevdesigns/ab-production-image
+          path: image
+      - name: Checkout ab-production-stack
+        uses: actions/checkout@v2
+        with:
+          repository: appdevdesigns/ab-production-stack
+          path: stack
+      - name: Copy docker-compose.test.yml
+        run: cp ./docker-compose.test.yml ./stack/docker-compose.test.yml
+      - name: Build ab-production-image
+        run: cd image && docker build --no-cache --compress -t digiserve/ab-sails-api:test . && cd ..
+        # --build-arg AB_GITHUB_COMMIT=${{ github.event.client_payload.commit }}
+      - name: Initialize docker swarm
         run: docker swarm init
-        
-      - name: Login to docker hub 
-        run: echo "$DOCKERHUB_PW" | docker login -u "$DOCKERHUB_USER" --password-stdin
-        
-      - name: Run installer script 
-        run: npm run pull
-
-      - name: Link in test configuration for docker swarm
-        run: ln -s ../docker-compose.test.yml workdir/docker-compose.test.yml
-
+      - name: Stack Deploy
+        run: cd stack && docker stack deploy -c docker-compose.test.yml ab && cd ..
       - name: Show GitHub commit information
         run: scripts/commit_info.sh
-
-      - name:  Run tests
+      - name: Run tests
         run: npm run test
