@@ -36,8 +36,8 @@ jobs:
       - name: Build ab-production-image
         run: |
           cd image &&
-          docker build --no-cache --build-arg AB_GITHUB_COMMIT=${{ github.events.inputs.commit }} --compress -t digiserve/ab-sails-api:test .
-          && cd ..
+          docker build --no-cache --build-arg AB_GITHUB_COMMIT=${{ github.event.inputs.commit }} --compress -t digiserve/ab-sails-api:test . &&
+          cd ..
       - name: Initialize docker swarm
         run: docker swarm init
       - name: Stack Deploy
