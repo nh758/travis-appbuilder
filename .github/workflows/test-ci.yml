@@ -1,0 +1,20 @@
+# Temp workflow to test the repository_dispatch on ci.yml
+name: test ci.yml run
+on: [push]
+jobs:
+  test:
+    name: Dispatch ci.yml
+    runs-on: ubuntu-latest
+    steps:
+      - name: run ci
+        id: test
+        uses: aurelien-baudet/workflow-dispatch@v2
+        with:
+          workflow: CI
+          token: ${{ secrets.PAT }}
+          repo: nh758/travis-appbuilder
+          inputs: '{"commit": "c0c7d9c485444d9a2dd20c1ceb8de9b600227f29"}'
+          wait-for-completion: true
+          wait-for-completion-timeout: 30m
+      - name: result
+        run: echo "Result -- ${{ steps.test.outputs.workflow-conclusion }}"
