@@ -1,23 +1,44 @@
-# travis-appbuilder
+# appbuilder-ci
 
-## Dependencies
-- node.js, npm
-- Docker
+Continuous Integration workflow for [appdevdesigns/app_builder](https://github.com/appdevdesigns/app_builder)
 
-## Installation steps
-- git clone https://github.com/echu888/travis-appbuilder.git
-- cd travis-appbuilder
-- scripts/installer.sh
+- End to End tests using cypress
 
-## Using a working copy (instead of installation)
-- ln -s ~/my_appbuilder_version workdir
+## Github Action
 
-## Starting appbuilder
-- scripts/docker.sh up
+The github action 'ci' can be triggered with a repistory_dispatch event and expects a commit to use for building the [ab-production-image](https://github.com/appdevdesigns/ab-production-image).
+After to building the image it gets deployed using [ab-production stack](https://github.com/appdevdesigns/ab-production-stack) using `docker-compose.test.yml`.
+Then the Cypress End-2-End test are run.
 
-## Running interactively
-- npm run interactive
+### Usage
 
-## Running headlessly
-- npm run headless
+Recommend using [workflow-dispatcher](https://github.com/marketplace/actions/workflow-dispatcher)
 
+```y
+- name: Build and Run E2E Tests
+   uses: adityakar/workflow-dispatcher
+   with:
+     owner: appdevdesigns
+     repo: travis-appbuilder
+     token: ${{ secrets.PAT }}
+     event_type: ab-ci
+     client_payload: '{"commit": "${{ GITHUB_SHA }}"}'
+     wait_time: 20
+     max_time: 1800
+```
+
+## Run Tests Locally
+
+Assumes app_builder is running locally on 1337
+
+```bash
+git clone https://github.com/appdevdesigns/travis-appbuilder.git
+
+cd travis-appbuilder
+
+ # Running interactively
+npm run interactive
+
+# Running headlessly
+npm run headless
+```
