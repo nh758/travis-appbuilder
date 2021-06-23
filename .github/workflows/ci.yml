@@ -1,17 +1,13 @@
 name: CI
-
 on:
-  push:
-  # branches: [master]
-  pull_request:
-    # branches: [master]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+  # Allows triggering from an action another repository. Expects event_type: 'ab-ci'
+  # and client_payload: { commit: ... } with the appbuilder commit to use when
+  # building ab-production-image
+  repository_dispatch:
+    types: [ab-ci]
 jobs:
   build:
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -32,8 +28,7 @@ jobs:
       - name: Copy docker-compose.test.yml
         run: cp ./docker-compose.test.yml ./stack/docker-compose.test.yml
       - name: Build ab-production-image
-        run: cd image && docker build --no-cache --compress -t digiserve/ab-sails-api:test . && cd ..
-        # --build-arg AB_GITHUB_COMMIT=${{ github.event.client_payload.commit }}
+        run: cd image && docker build --no-cache --build-arg AB_GITHUB_COMMIT=${{ github.event.client_payload.commit }} --compress -t digiserve/ab-sails-api:test . && cd ..
       - name: Initialize docker swarm
         run: docker swarm init
       - name: Stack Deploy
