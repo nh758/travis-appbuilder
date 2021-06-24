@@ -6,25 +6,29 @@ Continuous Integration workflow for [appdevdesigns/app_builder](https://github.c
 
 ## Github Action
 
-The github action 'ci' can be triggered with a repistory_dispatch event and expects a commit to use for building the [ab-production-image](https://github.com/appdevdesigns/ab-production-image).
+The github action 'CI' can be triggered with a workflow_dispatch event and expects a commit to use for building the [ab-production-image](https://github.com/appdevdesigns/ab-production-image).
 After to building the image it gets deployed using [ab-production stack](https://github.com/appdevdesigns/ab-production-stack) using `docker-compose.test.yml`.
 Then the Cypress End-2-End test are run.
 
 ### Usage
 
-Recommend using [workflow-dispatcher](https://github.com/marketplace/actions/workflow-dispatcher)
+[Run the action](https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow) from GitHub
 
-```y
-- name: Build and Run E2E Tests
-   uses: adityakar/workflow-dispatcher
-   with:
-     owner: appdevdesigns
-     repo: travis-appbuilder
-     token: ${{ secrets.PAT }}
-     event_type: ab-ci
-     client_payload: '{"commit": "${{ GITHUB_SHA }}"}'
-     wait_time: 20
-     max_time: 1800
+Trigger from another workflow using [aurelien-baudet/workflow-dispatch@v2](https://github.com/marketplace/actions/workflow-dispatch-and-wait) or similiar.
+
+```yml
+- name: run ci
+    id: test
+    uses: aurelien-baudet/workflow-dispatch@v2
+    with:
+      workflow: CI
+      token: ${{ secrets.PAT }}
+      repo: appdevdesigns/travis-appbuilder
+      inputs: '{"commit": "${{ GITHUB_SHA }}"}'
+      wait-for-completion: true
+      wait-for-completion-timeout: 30m
+  - name: result
+    run: echo "Result - ${{ steps.test.outputs.workflow-conclusion }}"
 ```
 
 ## Run Tests Locally

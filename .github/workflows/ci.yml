@@ -1,18 +1,21 @@
 name: CI
 on:
-  # Allows triggering from an action another repository. Expects event_type: 'ab-ci'
-  # and client_payload: { commit: ... } with the appbuilder commit to use when
-  # building ab-production-image
-  repository_dispatch:
-    types: [ab-ci]
+  # This can be triggered on github or in another workflow. Expects the input
+  # commit with the commit (or branch) from app_builder to use when building
+  # ab-production-image. If none are inputed the image will build using master.
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: commit
 jobs:
   build:
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
+      - name: Check commit
+        run: echo "using app_builder commit ${{ github.event.inputs.commit }}"
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
-
       - name: Install npm packages
         run: npm install
       - name: Checkout ab-production-image
@@ -28,12 +31,13 @@ jobs:
       - name: Copy docker-compose.test.yml
         run: cp ./docker-compose.test.yml ./stack/docker-compose.test.yml
       - name: Build ab-production-image
-        run: cd image && docker build --no-cache --build-arg AB_GITHUB_COMMIT=${{ github.event.client_payload.commit }} --compress -t digiserve/ab-sails-api:test . && cd ..
+        run: |
+          cd image &&
+          docker build --no-cache --build-arg AB_GITHUB_COMMIT=${{ github.event.inputs.commit }} --compress -t digiserve/ab-sails-api:test . &&
+          cd ..
       - name: Initialize docker swarm
         run: docker swarm init
       - name: Stack Deploy
         run: cd stack && docker stack deploy -c docker-compose.test.yml ab && cd ..
-      - name: Show GitHub commit information
-        run: scripts/commit_info.sh
       - name: Run tests
         run: npm run test
